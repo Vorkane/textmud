@@ -35,29 +35,6 @@ from evennia.settings_default import *
 SERVERNAME = "mygame"
 
 
-######################################################################
-# Settings given in secret_settings.py override those in this file.
-######################################################################
-try:
-    from server.conf.secret_settings import *
-except ImportError:
-    print("secret_settings.py file not found or failed to import.")
-
-######################################################################
-# Evennia Database config
-######################################################################
-
-# Database config syntax:
-# ENGINE - path to the the database backend. Possible choices are:
-#            'django.db.backends.sqlite3', (default)
-#            'django.db.backends.mysql',
-#            'django.db.backends.postgresql',
-#            'django.db.backends.oracle' (untested).
-# NAME - database name, or path to the db file for sqlite3
-# USER - db admin (unused in sqlite3)
-# PASSWORD - db admin password (unused in sqlite3)
-# HOST - empty string is localhost (unused in sqlite3)
-# PORT - empty string defaults to localhost (unused in sqlite3)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
@@ -69,6 +46,10 @@ DATABASES = {
     }
 }
 
-AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
-AUTO_PUPPET_ON_LOGIN = False
-CHARGEN_MENU = "world.chargen_menu"
+######################################################################
+# Settings given in secret_settings.py override those in this file.
+######################################################################
+try:
+    from server.conf.secret_settings import *
+except ImportError:
+    print("secret_settings.py file not found or failed to import.")
