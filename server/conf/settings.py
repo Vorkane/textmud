@@ -35,6 +35,16 @@ from evennia.settings_default import *
 SERVERNAME = "mygame"
 
 
+# Multiple characters per account, requires manual creation and login
+
+MULTISESSION_MODE = 2
+AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
+AUTO_PUPPET_ON_LOGIN = False
+MAX_NR_CHARACTERS = 5
+
+FILE_HELP_ENTRY_MODULES = [ 'world.help.combat_help' ]
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
