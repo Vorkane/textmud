@@ -3,6 +3,7 @@ import random
 from django.conf import settings
 
 from evennia import create_object, logger
+from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 from evennia.objects.models import ObjectDB
 from evennia.prototypes.spawner import spawn
 from evennia.utils.evmenu import EvMenu
