@@ -44,6 +44,8 @@ MAX_NR_CHARACTERS = 5
 
 FILE_HELP_ENTRY_MODULES = [ 'world.help.combat_help' ]
 
+#CHARGEN_MENU = "world.chargen_menu"
+
 
 DATABASES = {
     "default": {

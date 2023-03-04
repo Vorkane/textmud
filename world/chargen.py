@@ -1,3 +1,7 @@
+"""
+EvAdventure character generation.
+
+"""
 import random
 
 from django.conf import settings
@@ -17,49 +21,55 @@ from world.characters.races import Races
 from .random_tables import chargen_tables
 from .rules import dice
 
-_ATTRIBUTES = {
+_ABILITIES = {
     "STR": "strength",
-    "DEX": "dexterity",
-    "CON": "constitution",
-    "INT": "intelligence",
-    "WIS": "wisdom",
-    "CHA": "charisma"
+    "WIL": "will",
+    "CUN": "cunning",
 }
 
 _TEMP_SHEET = """
-{name} the {race} {cclass}
+|wName:|n {name}
+|wRace:|n {race} 
+|wClass:|n {cclass}
 
-STR +{strength}
-DEX +{dexterity}
-CON +{constitution}
-INT +{intelligence}
-WIS +{wisdom}
-CHA +{charisma}
+|wHP:|n {hp} / {hp_max}
+
+|w=========Attributes=========|n
+
+|wStrength:|n   +{strength}
+|wCunning:|n    +{cunning}
+|wWill:|n       +{will}
+
+|w============================|n
 
 {description}
 
-Your belongings:
+|wYour belongings:|n
 {equipment}
 """
 
-_SORTED_RACES = sorted(list(Races.value()), key=lambda race: race.name)
-_SORTED_CLASSES = sorted(list(list(CharacterClasses.values()), key=lambda cclass: cclass.name))
+_SORTED_RACES = sorted(list(Races.values()), key=lambda race: race.name)
+_SORTED_CLASSES = sorted(list(CharacterClasses.values()), key=lambda cclass: cclass.name)
+
 
 class TemporaryCharacterSheet:
-
     """
     This collects all the rules for generating a new character. An instance of this class is used
     to pass around the current character state during character generation and also applied to
     the character at the end. This class instance can also be saved on the menu to make sure a user
     is not losing their half-created character.
+
     Note:
         In standard Knave, the character's attribute bonus is rolled randomly and will give a
         value 1-6; and there is no guarantee for 'equal' starting characters.
+
         Knave uses a d8 roll to get the initial hit points. We will follow the recommendation
         from the rule that we will use a minimum of 5 HP.
+
         We *will* roll random start equipment though. Contrary to standard Knave, we'll also
         randomly assign the starting weapon among a small selection of equal-dmg weapons (since
         there is no GM to adjudicate a different choice).
+
     """
 
     def _random_ability(self):
@@ -70,37 +80,54 @@ class TemporaryCharacterSheet:
 
     def _random_race(self):
         return random.choice(_SORTED_RACES)
+    
     def swap_race(self, new_race):
-        # Remove previous modifiers
-        self.strength -= self.race.strength_mod
-        self.will -= self.race.will_mod
-        self.cunning -= self.race.cunning_mod
+        if self.race != "":
+            # Remove previous modifiers
+            self.strength -= self.race.strength_mod
+            self.will -= self.race.will_mod
+            self.cunning -= self.race.cunning_mod
 
-        self.race = new_race
+            self.race = new_race
 
-        # Apply new modifiers
-        # TODO This should be a trait modifier instead
-        self.strength += self.race.strength_mod
-        self.will += self.race.will_mod
-        self.cunning += self.race.cunning_mod
+            # Apply new modifiers
+            # TODO This should be a trait modifier instead
+            self.strength += self.race.strength_mod
+            self.will += self.race.will_mod
+            self.cunning += self.race.cunning_mod
+        else:
+            self.race = new_race
+             # Apply new modifiers
+            # TODO This should be a trait modifier instead
+            self.strength += self.race.strength_mod
+            self.will += self.race.will_mod
+            self.cunning += self.race.cunning_mod
 
     def __init__(self):
         # name will likely be modified later
-        self.name = dice.roll_random_table("1d282", chargen_tables["name"])
+        #self.name = dice.roll_random_table("1d282", chargen_tables["name"])
+        self.name = ""
+
+        self.strength = 5
+        self.will = 5
+        self.cunning = 5
+
+        self.race = ""
+        self.cclass = ""
 
         # base attribute values
-        self.strength = self._random_ability()
-        self.will = self._random_ability()
-        self.cunning = self._random_ability()
+        #self.strength = self._random_ability()
+        #self.will = self._random_ability()
+        #self.cunning = self._random_ability()
 
         # randomized race and class
-        self.race = self._random_race()
-        self.cclass = self._random_class()
+        #self.race = self._random_race()
+        #self.cclass = self._random_class()
 
         # apply race bonuses
-        self.strength += self.race.strength_mod
-        self.will += self.race.will_mod
-        self.cunning += self.race.cunning_mod
+        #self.strength += self.race.strength_mod
+        #self.will += self.race.will_mod
+        #self.cunning += self.race.cunning_mod
 
         # physical attributes (only for rp purposes)
         physique = dice.roll_random_table("1d20", chargen_tables["physique"])
@@ -147,6 +174,7 @@ class TemporaryCharacterSheet:
     def show_sheet(self):
         """
         Show a temp character sheet, a compressed version of the real thing.
+
         """
         equipment = (
             str(item)
@@ -161,6 +189,8 @@ class TemporaryCharacterSheet:
             will=self.will,
             race=self.race,
             cclass=self.cclass,
+            hp=self.hp,
+            hp_max=self.hp_max,
             description=self.desc,
             equipment=", ".join(equipment),
         )
@@ -168,6 +198,7 @@ class TemporaryCharacterSheet:
     def apply(self, account):
         """
         Once the chargen is complete, call this create and set up the character.
+
         """
         grid = get_xyzgrid()
         start_location = grid.get_room(('12', '7', 'riverport'))
@@ -249,6 +280,7 @@ def node_chargen(caller, raw_string, **kwargs):
     """
     This node is the central point of chargen. We return here to see our current
     sheet and break off to edit different parts of it.
+
     In Knave, not so much can be changed.
     """
     tmp_character = kwargs["tmp_character"]
@@ -256,19 +288,19 @@ def node_chargen(caller, raw_string, **kwargs):
     text = tmp_character.show_sheet()
 
     options = [{"desc": "Change your name", "goto": ("node_change_name", kwargs)}]
-    if tmp_character.ability_changes <= 0:
-        options.append(
-            {
-                "desc": "Swap two of your ability scores (once)",
-                "goto": ("node_swap_abilities", kwargs),
-            }
-        )
+    #if tmp_character.ability_changes <= 0:
+    #    options.append(
+    #        {
+    #            "desc": "Swap two of your ability scores (once)",
+    #            "goto": ("node_swap_abilities", kwargs),
+    #        }
+    #    )
     options.append(
         {"desc": "Change your race", "goto": ("node_show_races", kwargs)}
     )
-    options.append(
-        {"desc": "Change your class", "goto": ("node_show_classes", kwargs)}
-    )
+    #options.append(
+    #    {"desc": "Change your class", "goto": ("node_show_classes", kwargs)}
+    #)
     options.append(
         {"desc": "Accept and create character", "goto": ("node_apply_character", kwargs)},
     )
@@ -279,6 +311,7 @@ def node_chargen(caller, raw_string, **kwargs):
 def _update_name(caller, raw_string, **kwargs):
     """
     Used by node_change_name below to check what user entered and update the name if appropriate.
+
     """
     if raw_string:
         tmp_character = kwargs["tmp_character"]
@@ -290,6 +323,7 @@ def _update_name(caller, raw_string, **kwargs):
 def node_change_name(caller, raw_string, **kwargs):
     """
     Change the random name of the character.
+
     """
     tmp_character = kwargs["tmp_character"]
 
@@ -306,6 +340,7 @@ def _swap_abilities(caller, raw_string, **kwargs):
     """
     Used by node_swap_abilities to parse the user's input and swap ability
     values.
+
     """
     if raw_string:
         abi1, *abi2 = raw_string.split(" ", 1)
@@ -314,14 +349,14 @@ def _swap_abilities(caller, raw_string, **kwargs):
             return None, kwargs
         abi2 = abi2[0]
         abi1, abi2 = abi1.upper().strip(), abi2.upper().strip()
-        if abi1 not in _ATTRIBUTES or abi2 not in _ATTRIBUTES:
+        if abi1 not in _ABILITIES or abi2 not in _ABILITIES:
             caller.msg("Not a familiar set of abilites.")
             return None, kwargs
 
         # looks okay = swap values. We need to convert STR to strength etc
         tmp_character = kwargs["tmp_character"]
-        abi1 = _ATTRIBUTES[abi1]
-        abi2 = _ATTRIBUTES[abi2]
+        abi1 = _ABILITIES[abi1]
+        abi2 = _ABILITIES[abi2]
         abival1 = getattr(tmp_character, abi1)
         abival2 = getattr(tmp_character, abi2)
 
@@ -336,16 +371,20 @@ def _swap_abilities(caller, raw_string, **kwargs):
 def node_swap_abilities(caller, raw_string, **kwargs):
     """
     One is allowed to swap the values of two abilities around, once.
+
     """
     tmp_character = kwargs["tmp_character"]
 
     text = f"""
 Your current abilities:
+
 STR +{tmp_character.strength}
 CUN +{tmp_character.cunning}
 WIL +{tmp_character.will}
+
 You can swap the values of two abilities around.
 You can only do this once, so choose carefully!
+
 To swap the values of e.g.  STR and WIL, write |wSTR WIL|n. Empty to abort.
 """
 
@@ -357,6 +396,7 @@ To swap the values of e.g.  STR and WIL, write |wSTR WIL|n. Empty to abort.
 def node_apply_character(caller, raw_string, **kwargs):
     """
     End chargen and create the character. We will also puppet it.
+
     """
     tmp_character = kwargs["tmp_character"]
     new_character = tmp_character.apply(caller)
@@ -372,6 +412,7 @@ def node_apply_character(caller, raw_string, **kwargs):
 def start_chargen(caller, session=None):
     """
     This is a start point for spinning up the chargen from a command later.
+
     """
 
     menutree = {
@@ -403,6 +444,7 @@ def node_show_classes(caller, raw_string, **kwargs):
     """Starting page and Class listing."""
     text = ("""\
         Select a |cClass|n.
+
         Select one by number below to view its details, or |whelp|n
         at any time for more info.
     """)
@@ -456,6 +498,7 @@ def node_show_races(caller, raw_string, **kwargs):
     """Starting page and Class listing."""
     text = """\
         Select a |cRace|n.
+
         Select one by number below to view its details, or |whelp|n
         at any time for more info.
     """

@@ -29,17 +29,18 @@ class CharacterClasses:
     def _get_cached_dict(cls):
         if not cls._cached_dict:
             new_dict = {value.key: value for value in cls.__dict__.values() if isinstance(value, CharacterClass)}
-            cls._cache_dict = new_dict
+            cls._cached_dict = new_dict
+
         return cls._cached_dict
-    
+
     @classmethod
     def items(cls):
         return cls._get_cached_dict().items()
-    
+
     @classmethod
-    def value(cls):
-        return cls._get_cached_dict().value()
-    
+    def values(cls):
+        return cls._get_cached_dict().values()
+
     @classmethod
     def get(cls, key):
         return cls._get_cached_dict().get(key)

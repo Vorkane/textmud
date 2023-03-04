@@ -8,6 +8,7 @@ creation commands.
 
 """
 from evennia.objects.objects import DefaultCharacter
+from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
 
 from .objects import ObjectParent
 
@@ -32,5 +33,11 @@ class Character(ObjectParent, DefaultCharacter):
     at_post_puppet - Echoes "AccountName has entered the game" to the room.
 
     """
+
+    is_pc = True
+
+    hp = AttributeProperty(default=4)
+    hp_max = AttributeProperty(default=4)
+
 
     pass
