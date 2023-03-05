@@ -6,8 +6,20 @@ Commands describe the input the account can do to the game.
 """
 
 from evennia.commands.command import Command as BaseCommand
+from evennia import default_cmds
 
-# from evennia import default_cmds
+class MuxCommand(default_cmds.MuxCommand):
+    # ...
+    def at_post_cmd(self):
+        "called after self.func()."
+        caller = self.caller
+        x=''       
+        prompt = f"\n{x:-<25}\nHP: {caller.db.hp}/{caller.db.hp_max}\n{x:-<25}\n"
+        caller.msg(prompt=prompt)
+
+# overloading the look command
+class CmdLook(default_cmds.CmdLook, MuxCommand):
+    pass
 
 
 class Command(BaseCommand):
@@ -53,7 +65,7 @@ class Command(BaseCommand):
 # from evennia.utils import utils
 #
 #
-# class MuxCommand(Command):
+#class MuxCommand(Command):
 #     """
 #     This sets up the basis for a MUX command. The idea
 #     is that most other Mux-related commands should just

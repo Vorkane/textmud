@@ -298,9 +298,9 @@ def node_chargen(caller, raw_string, **kwargs):
     options.append(
         {"desc": "Change your race", "goto": ("node_show_races", kwargs)}
     )
-    #options.append(
-    #    {"desc": "Change your class", "goto": ("node_show_classes", kwargs)}
-    #)
+    options.append(
+        {"desc": "Change your class", "goto": ("node_show_classes", kwargs)}
+    )
     options.append(
         {"desc": "Accept and create character", "goto": ("node_apply_character", kwargs)},
     )
@@ -315,7 +315,7 @@ def _update_name(caller, raw_string, **kwargs):
     """
     if raw_string:
         tmp_character = kwargs["tmp_character"]
-        tmp_character.name = raw_string.lower().capitalize()
+        tmp_character.name = raw_string.lower().capitalize().strip()
 
     return "node_chargen", kwargs
 
