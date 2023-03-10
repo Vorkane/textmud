@@ -6,6 +6,7 @@ Rooms are simple containers that has no location of their own.
 """
 
 from evennia.objects.objects import DefaultRoom
+import textwrap
 
 from .objects import ObjectParent
 
@@ -20,5 +21,25 @@ class Room(ObjectParent, DefaultRoom):
     See examples/object.py for a list of
     properties and methods available on all Objects.
     """
+
+
+    appearance_template = (
+        '{header}'
+        f"{'==='}{' |502{name}|n ' :=<50}\n"
+        '{desc}\n'
+        f"{' |502Characters|n ':=^56}"
+        '{characters}\n'
+        f"{' |502Exits|n ':=^56}\n"
+        '{exits}\n'
+        '{footer}'
+    )
+
+    # appearance_template = """
+    # {header}
+    # |502{name}|n
+    # {desc}
+    # {exits}{characters}{things}
+    # {footer}
+    # """
 
     pass

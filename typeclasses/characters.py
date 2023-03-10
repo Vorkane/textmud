@@ -9,6 +9,13 @@ creation commands.
 """
 from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
+from evennia.utils.evform import EvForm
+from evennia.utils.evtable import EvTable
+from evennia.utils.logger import log_trace
+from evennia.utils.utils import lazy_property
+
+from world.characters.classes import CharacterClasses
+from world.characters.races import Races
 
 from .objects import ObjectParent
 
@@ -36,8 +43,49 @@ class Character(ObjectParent, DefaultCharacter):
 
     is_pc = True
 
+    # these are the ability bonuses. Defense is always 10 higher
+    strength = AttributeProperty(default=1) #brawn
+    dexterity = AttributeProperty(default=1) #deftness or nimbleneess
+    constitution = AttributeProperty(default=1) #vitality
+    intelligence = AttributeProperty(default=1) #brilliance
+    wisdom = AttributeProperty(default=1) #insight
+    charisma = AttributeProperty(default=1) #allure
+
+    cclass_key =  AttributeProperty()
+    race_key = AttributeProperty()
+
     hp = AttributeProperty(default=4)
     hp_max = AttributeProperty(default=4)
+    mana = AttributeProperty(default=4)
+    mana_max = AttributeProperty(default=4)
+    stamina = AttributeProperty(default=2)
+    stamina_max = AttributeProperty(default=4)
 
+
+    level = AttributeProperty(default=1)  # Just a bragging stat, for now.
+    coins = AttributeProperty(default=0)  # copper coins
+
+    xp = AttributeProperty(default=0)
+    xp_tnl = AttributeProperty = 1000
+
+
+    
+    @lazy_property
+    def cclass(self):
+        cclass = self.ndb.cclass
+        if cclass is None:
+            cclass = CharacterClasses.get(self.db.cclass_key)
+            self.ndb.cclass = cclass
+
+        return cclass
+
+    @lazy_property
+    def race(self):
+        race = self.ndb.race
+        if race is None:
+            race = Races.get(self.db.race_key)
+            self.ndb.race = race
+
+        return race
 
     pass

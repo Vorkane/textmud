@@ -8,18 +8,17 @@ Commands describe the input the account can do to the game.
 from evennia.commands.command import Command as BaseCommand
 from evennia import default_cmds
 
-class MuxCommand(default_cmds.MuxCommand):
+# class MuxCommand(default_cmds.MuxCommand):
     # ...
-    def at_post_cmd(self):
-        "called after self.func()."
-        caller = self.caller
-        x=''       
-        prompt = f"\n{x:-<25}\nHP: {caller.db.hp}/{caller.db.hp_max}\n{x:-<25}\n"
-        caller.msg(prompt=prompt)
+    # def at_post_cmd(self):
+    #     "called after self.func()."
+    #     caller = self.caller   
+    #     prompt = f"\n{'' :-<25}\n|rHP|n: {caller.db.hp}|w[|n{caller.db.hp_max}|w]|n - |bMP|n: {caller.db.mana}|B[|n{caller.db.mana_max}|B]|n\n{'' :-<25}\n"
+    #     caller.msg(prompt=prompt)
 
-# overloading the look command
-class CmdLook(default_cmds.CmdLook, MuxCommand):
-    pass
+#overloading the look command
+#class CmdLook(default_cmds.CmdLook, MuxCommand):
+#     pass
 
 
 class Command(BaseCommand):
@@ -42,6 +41,13 @@ class Command(BaseCommand):
     #     - at_post_cmd(): Extra actions, often things done after
     #         every command, like prompts.
     #
+
+    def at_post_cmd(self):
+        "called after self.func()."
+        caller = self.caller   
+        prompt = f"\n |rHP|n: |r{caller.db.hp} |n(|r{caller.db.hp_max}|n) - |cMP|n: |c{caller.db.mana}|n (|c{caller.db.mana_max}|n) - |yStamina|n: |y{caller.db.stamina}|n (|y{caller.db.stamina_max}|n)\n  > "
+        caller.msg(prompt=prompt)
+
     pass
 
 
