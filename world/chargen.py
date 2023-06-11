@@ -30,7 +30,7 @@ _ABILITIES = {
 _TEMP_SHEET = """
 |wName:|n {name}
 |wRace:|n {race} 
-|wClass:|n {cclass}
+|wClass:|n {pri_class}
 
 |wHP:|n {hp} / {hp_max}
 
@@ -49,7 +49,7 @@ _TEMP_SHEET = """
 """
 
 _SORTED_RACES = sorted(list(Races.values()), key=lambda race: race.name)
-_SORTED_CLASSES = sorted(list(CharacterClasses.values()), key=lambda cclass: cclass.name)
+_SORTED_CLASSES = sorted(list(CharacterClasses.values()), key=lambda pri_class: pri_class.name)
 
 
 class TemporaryCharacterSheet:
@@ -113,7 +113,7 @@ class TemporaryCharacterSheet:
         self.cunning = 5
 
         self.race = ""
-        self.cclass = ""
+        self.pri_class = ""
 
         # base attribute values
         #self.strength = self._random_ability()
@@ -188,7 +188,7 @@ class TemporaryCharacterSheet:
             cunning=self.cunning,
             will=self.will,
             race=self.race,
-            cclass=self.cclass,
+            pri_class=self.pri_class,
             hp=self.hp,
             hp_max=self.hp_max,
             description=self.desc,
@@ -221,7 +221,7 @@ class TemporaryCharacterSheet:
                 ("cunning", self.cunning),
                 ("will", self.will),
                 ("race_key", self.race.key),
-                ("cclass_key", self.cclass.key),
+                ("pri_class_key", self.pri_class.key),
                 ("hp", self.hp),
                 ("hp_max", self.hp_max),
                 ("desc", self.desc),
@@ -451,10 +451,10 @@ def node_show_classes(caller, raw_string, **kwargs):
 
     options = []
 
-    for cclass in _SORTED_CLASSES:
+    for pri_class in _SORTED_CLASSES:
         options.append({
-            "desc": "|c{}|n".format(cclass.name),
-            "goto": ("node_select_class", {"cclass": cclass, **kwargs}),
+            "desc": "|c{}|n".format(pri_class.name),
+            "goto": ("node_select_class", {"pri_class": pri_class, **kwargs}),
         })
 
     return (text, "Type in the number next to the class to have more info."), options
@@ -463,19 +463,19 @@ def node_select_class(caller, raw_string, **kwargs):
     """Class detail and selection menu node."""
     try:
         choice = int(raw_string.strip())
-        cclass = _SORTED_CLASSES[choice - 1]
+        pri_class = _SORTED_CLASSES[choice - 1]
     except (ValueError, KeyError, IndexError):
         caller.msg("|rInvalid choice. Try again.")
         return None
 
-    text = cclass.desc + "\nWould you like to become this class?"
+    text = pri_class.desc + "\nWould you like to become this class?"
     help = "Examine the properties of this class and decide whether\n"
     help += "to use its starting attributes for your character."
     options = (
         {
             "key": ("Yes", "ye", "y"),
-            "desc": f"Become {cclass.name}",
-            "goto": ("node_apply_class", {"cclass": cclass, **kwargs}),
+            "desc": f"Become {pri_class.name}",
+            "goto": ("node_apply_class", {"pri_class": pri_class, **kwargs}),
         },
         {
             "key": ("No", "n", "_default"),
@@ -487,9 +487,9 @@ def node_select_class(caller, raw_string, **kwargs):
 
 
 def node_apply_class(caller, raw_string, **kwargs):
-    cclass = kwargs.get('cclass')
+    pri_class = kwargs.get('pri_class')
     tmp_character = kwargs["tmp_character"]
-    tmp_character.cclass = cclass
+    tmp_character.pri_class = pri_class
 
     return node_chargen(caller, '', tmp_character=tmp_character)
 

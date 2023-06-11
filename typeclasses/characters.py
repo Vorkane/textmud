@@ -72,13 +72,13 @@ class Character(ObjectParent, DefaultCharacter):
 
     
     @lazy_property
-    def cclass(self):
-        cclass = self.ndb.cclass
-        if cclass is None:
-            cclass = CharacterClasses.get(self.db.cclass_key)
-            self.ndb.cclass = cclass
+    def pri_class(self):
+        pri_class = self.ndb.pri_class
+        if pri_class is None:
+            pri_class = CharacterClasses.get(self.db.pri_class_key)
+            self.ndb.pri_class = pri_class
 
-        return cclass
+        return pri_class
 
     @lazy_property
     def race(self):
