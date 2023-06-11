@@ -45,7 +45,7 @@ class Command(BaseCommand):
     def at_post_cmd(self):
         "called after self.func()."
         caller = self.caller   
-        prompt = f"\n |rHP|n: |r{caller.db.hp} |n(|r{caller.db.hp_max}|n) - |cMP|n: |c{caller.db.mana}|n (|c{caller.db.mana_max}|n) - |yStamina|n: |y{caller.db.stamina}|n (|y{caller.db.stamina_max}|n)\n  > "
+        prompt = f"\n|rHP|n: |r{caller.db.hp}|n(|r{caller.db.hp_max}|n) |cMP|n: |c{caller.db.mana}|n(|c{caller.db.mana_max}|n) |yStamina|n: |y{caller.db.stamina}|n(|y{caller.db.stamina_max}|n)\n"
         caller.msg(prompt=prompt)
 
     pass

@@ -65,8 +65,9 @@ class Character(ObjectParent, DefaultCharacter):
     level = AttributeProperty(default=1)  # Just a bragging stat, for now.
     coins = AttributeProperty(default=0)  # copper coins
 
-    xp = AttributeProperty(default=0)
-    xp_tnl = AttributeProperty = 1000
+    totalxp = AttributeProperty(default=1)
+    currentxp = AttributeProperty = 1
+    pri_xp_tnl = AttributeProperty = 1000
 
 
     
