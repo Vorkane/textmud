@@ -45,7 +45,7 @@ class Character(ObjectParent, DefaultCharacter):
 
     # these are the ability bonuses. Defense is always 10 higher
     strength = AttributeProperty(default=1) #brawn
-    dexterity = AttributeProperty(default=1) #deftness or nimbleneess
+    dexterity = AttributeProperty(default=1) #deftness or nimbleness
     constitution = AttributeProperty(default=1) #vitality
     intelligence = AttributeProperty(default=1) #brilliance
     wisdom = AttributeProperty(default=1) #insight
