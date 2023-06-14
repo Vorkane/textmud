@@ -36,6 +36,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         super().at_cmdset_creation()
         #self.add(command.CmdLook())
         self.add(custom_commands.CmdStatus())
+        self.add(custom_commands.CmdGain())
         #
         # any commands you add below will overload the default ones.
         #

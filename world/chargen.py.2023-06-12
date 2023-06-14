@@ -23,27 +23,22 @@ from .rules import dice
 
 _ABILITIES = {
     "STR": "strength",
-    "DEX": "dexterity",
-    "CON": "constitution",
-    "INT": "intelligence",
-    "WIS": "wisdom",
-    "CHA": "charisma"
+    "WIL": "will",
+    "CUN": "cunning",
 }
 
 _TEMP_SHEET = """
 |wName:|n {name}
 |wRace:|n {race} 
+|wClass:|n {pri_class}
 
 |wHP:|n {hp} / {hp_max}
 
 |w=========Attributes=========|n
 
-|wStrength:|n        {strength}
-|wDexterity:|n       {dexterity}
-|wConstitution:|n    {constitution}
-|wIntelligence:|n    {intelligence}
-|wWisdom:|n          {wisdom}
-|wCharisma:|n        {charisma}
+|wStrength:|n   {strength}
+|wCunning:|n    {cunning}
+|wWill:|n       {will}
 
 |w============================|n
 
@@ -87,35 +82,26 @@ class TemporaryCharacterSheet:
         return random.choice(_SORTED_RACES)
     
     def swap_race(self, new_race):
-        if self.race != "None":
+        if self.race != "":
             # Remove previous modifiers
             self.strength -= self.race.strength_mod
-            self.dexterity -= self.race.dexterity_mod
-            self.constitution -= self.race.constitution_mod
-            self.intelligence -= self.race.intelligence_mod
-            self.wisdom -= self.race.wisdom_mod
-            self.charisma -= self.race.charisma_mod
+            self.will -= self.race.will_mod
+            self.cunning -= self.race.cunning_mod
 
             self.race = new_race
 
             # Apply new modifiers
             # TODO This should be a trait modifier instead
             self.strength += self.race.strength_mod
-            self.dexterity += self.race.dexterity_mod
-            self.constitution += self.race.constitution_mod
-            self.intelligence += self.race.intelligence_mod
-            self.wisdom += self.race.wisdom_mod
-            self.charisma += self.race.charisma_mod
+            self.will += self.race.will_mod
+            self.cunning += self.race.cunning_mod
         else:
             self.race = new_race
              # Apply new modifiers
             # TODO This should be a trait modifier instead
             self.strength += self.race.strength_mod
-            self.dexterity += self.race.dexterity_mod
-            self.constitution += self.race.constitution_mod
-            self.intelligence += self.race.intelligence_mod
-            self.wisdom += self.race.wisdom_mod
-            self.charisma += self.race.charisma_mod
+            self.will += self.race.will_mod
+            self.cunning += self.race.cunning_mod
 
     def __init__(self):
         # name will likely be modified later
@@ -123,14 +109,25 @@ class TemporaryCharacterSheet:
         self.name = ""
 
         self.strength = 5
-        self.dexterity = 5
-        self.constitution = 5
-        self.intelligence = 5
-        self.wisdom = 5
-        self.charisma = 5
+        self.will = 5
+        self.cunning = 5
 
-        self.race = "None"
-        self.pri_class = "None"
+        self.race = ""
+        self.pri_class = ""
+
+        # base attribute values
+        #self.strength = self._random_ability()
+        #self.will = self._random_ability()
+        #self.cunning = self._random_ability()
+
+        # randomized race and class
+        #self.race = self._random_race()
+        #self.cclass = self._random_class()
+
+        # apply race bonuses
+        #self.strength += self.race.strength_mod
+        #self.will += self.race.will_mod
+        #self.cunning += self.race.cunning_mod
 
         # physical attributes (only for rp purposes)
         physique = dice.roll_random_table("1d20", chargen_tables["physique"])
@@ -153,7 +150,7 @@ class TemporaryCharacterSheet:
         )
 
         # same for all
-        self.hp_max = max(8, dice.roll("1d12"))
+        self.hp_max = max(5, dice.roll("1d8"))
         self.hp = self.hp_max
 
         # random equipment
@@ -188,11 +185,8 @@ class TemporaryCharacterSheet:
         return _TEMP_SHEET.format(
             name=self.name,
             strength=self.strength,
-            dexterity=self.dexterity,
-            constitution=self.constitution,
-            intelligence=self.intelligence,
-            wisdom=self.wisdom,
-            charisma=self.charisma,
+            cunning=self.cunning,
+            will=self.will,
             race=self.race,
             pri_class=self.pri_class,
             hp=self.hp,
@@ -224,11 +218,8 @@ class TemporaryCharacterSheet:
             permissions=permissions,
             attributes=(
                 ("strength", self.strength),
-                ("dexterity", self.intelligence),
-                ("constitution", self.constitution),
-                ("intelligence", self.intelligence),
-                ("wisdom", self.wisdom),
-                ("charisma", self.charisma),
+                ("cunning", self.cunning),
+                ("will", self.will),
                 ("race_key", self.race.key),
                 ("pri_class_key", self.pri_class.key),
                 ("hp", self.hp),
@@ -388,11 +379,8 @@ def node_swap_abilities(caller, raw_string, **kwargs):
 Your current abilities:
 
 STR +{tmp_character.strength}
-DEX +{tmp_character.dexterity}
-CON +{tmp_character.constitution}
-INT +{tmp_character.intelligence}
-WIS +{tmp_character.wisdom}
-CHA +{tmp_character.charisma}
+CUN +{tmp_character.cunning}
+WIL +{tmp_character.will}
 
 You can swap the values of two abilities around.
 You can only do this once, so choose carefully!

@@ -7,8 +7,11 @@ class Race:
     name: str
     desc: str
     strength_mod: int = 0
-    cunning_mod: int = 0
-    will_mod: int = 0
+    dexterity_mod: int = 0
+    constitution_mod: int = 0
+    intelligence_mod: int = 0
+    wisdom_mod: int = 0
+    charisma_mod: int = 0
 
     def __str__(self):
         return self.name
@@ -20,13 +23,6 @@ class Race:
 class Races:
     _cached_dict = None
 
-    Human = Race(
-        key="human",
-        name="Human",
-        cunning_mod=1,
-        desc="Your average human.",
-    )
-
     Dwarf = Race(
         key="dwarf",
         name="Dwarf",
@@ -34,22 +30,58 @@ class Races:
         desc="Short and strong.",
     )
 
-    HalfElf = Race(
-        key="half_elf",
-        name="Half Elf",
-        will_mod=1,
-        desc="Bit less average"
-    )
-
     Elf = Race(
         key="elf",
         name="Elf",
         strength_mod=-1,
-        will_mod=1,
+        wisdom_mod=1,
         desc="Regular elves",
     )
 
-    Goblin = Race(
+    HalfElf = Race(
+        key="half_elf",
+        name="Half Elf",
+        wisdom_mod=1,
+        desc="Bit less average",
+    )
+
+    Human = Race(
+        key="human",
+        name="Human",
+        desc="Your average human.",
+    )
+
+    Pallum = Race(
+        key="pallum",
+        name="Pallum",
+        dexterity_mod=1,
+        desc="Smaller in stature, they appear similar to humans. Often called hobbits",
+    )
+
+
+    @classmethod
+    def _get_cached_dict(cls):
+        if not cls._cached_dict:
+            new_dict = {value.key: value for value in cls.__dict__.values() if isinstance(value, Race)}
+            cls._cached_dict = new_dict
+
+        return cls._cached_dict
+
+    @classmethod
+    def items(cls):
+        return cls._get_cached_dict().items()
+
+    @classmethod
+    def values(cls):
+        return cls._get_cached_dict().values()
+
+    @classmethod
+    def get(cls, key):
+        return cls._get_cached_dict().get(key)
+
+
+
+"""     Goblin = Race(
         key="goblin",
         name="Goblin",
         cunning_mod=1,
@@ -81,24 +113,5 @@ class Races:
         cunning_mod=2,
         strength_mod=-1,
         desc="Shorter but cunning"
-    )
-
-    @classmethod
-    def _get_cached_dict(cls):
-        if not cls._cached_dict:
-            new_dict = {value.key: value for value in cls.__dict__.values() if isinstance(value, Race)}
-            cls._cached_dict = new_dict
-
-        return cls._cached_dict
-
-    @classmethod
-    def items(cls):
-        return cls._get_cached_dict().items()
-
-    @classmethod
-    def values(cls):
-        return cls._get_cached_dict().values()
-
-    @classmethod
-    def get(cls, key):
-        return cls._get_cached_dict().get(key)
+    ) 
+"""

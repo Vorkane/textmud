@@ -3,7 +3,8 @@ from evennia import default_cmds
 import math
 
 class CmdStatus(Command):
-    key = "score"
+    key = "status"
+    aliases = "score"
 
     def func(self):
         _CHAR_STATUS  = (
@@ -25,3 +26,16 @@ class CmdStatus(Command):
 
         
         self.caller.msg(_CHAR_STATUS)
+
+class CmdGain(Command):
+    key = "gain"
+
+    def func(self):
+
+        caller = self.caller
+
+        f"{'Test output'}"
+        if self.caller.currentxp >= self.caller.pri_xp_tnl:
+            caller.msg("You leveled up")
+        elif self.caller.currentxp < self.caller.pri_xp_tnl:
+            caller.msg("You did not level up")
