@@ -13,6 +13,11 @@ class CharacterClass:
 class CharacterClasses:
     _cached_dict = None
 
+    Default = CharacterClass(
+        key="none",
+        name="None",
+        desc="Default Class."
+    )
     Warrior = CharacterClass(
         key="warrior",
         name="Warrior",

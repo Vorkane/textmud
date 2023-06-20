@@ -121,16 +121,19 @@ class TemporaryCharacterSheet:
         # name will likely be modified later
         #self.name = dice.roll_random_table("1d282", chargen_tables["name"])
         self.name = ""
+        self.race = "None"
+        self.pri_class = "None"
 
         self.strength = 5
         self.dexterity = 5
         self.constitution = 5
         self.intelligence = 5
         self.wisdom = 5
-        self.charisma = 5
+        self.charisma = 5        
 
-        self.race = "None"
-        self.pri_class = "None"
+        self.hp_max = max(18, dice.roll("1d30"))
+        self.hp = self.hp_max
+
 
         # physical attributes (only for rp purposes)
         physique = dice.roll_random_table("1d20", chargen_tables["physique"])
@@ -150,11 +153,7 @@ class TemporaryCharacterSheet:
             f"You are {physique} with a {face} face, {skin} skin, {hair} hair, {speech} speech, and"
             f" {clothing} clothing. You were a {background.title()}, but you were {misfortune} and"
             f" ended up a knave. You are {virtue} but also {vice}. You tend towards {alignment}."
-        )
-
-        # same for all
-        self.hp_max = max(8, dice.roll("1d12"))
-        self.hp = self.hp_max
+        )   
 
         # random equipment
         self.armor = dice.roll_random_table("1d20", chargen_tables["armor"])
@@ -307,9 +306,9 @@ def node_chargen(caller, raw_string, **kwargs):
     options.append(
         {"desc": "Change your race", "goto": ("node_show_races", kwargs)}
     )
-    options.append(
-        {"desc": "Change your class", "goto": ("node_show_classes", kwargs)}
-    )
+    #options.append(
+    #    {"desc": "Change your class", "goto": ("node_show_classes", kwargs)}
+    #)
     options.append(
         {"desc": "Accept and create character\n", "goto": ("node_apply_character", kwargs)},
     )
@@ -411,6 +410,12 @@ def node_apply_character(caller, raw_string, **kwargs):
 
     """
     tmp_character = kwargs["tmp_character"]
+
+    pri_class = _SORTED_CLASSES[0]
+
+    caller.msg({pri_class})
+    tmp_character.pri_class = pri_class
+
     new_character = tmp_character.apply(caller)
     caller.db._playable_characters.append(new_character)
     session = caller.ndb._evmenu._session
@@ -480,7 +485,7 @@ def node_select_class(caller, raw_string, **kwargs):
         caller.msg("|rInvalid choice. Try again.")
         return None
 
-    text = pri_class.desc + "\nWould you like to become this class?"
+    text = pri_class.desc + "\n\nWould you like to become this class?"
     help = "Examine the properties of this class and decide whether\n"
     help += "to use its starting attributes for your character."
     options = (

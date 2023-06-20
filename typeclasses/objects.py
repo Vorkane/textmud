@@ -11,7 +11,7 @@ inheritance.
 
 """
 from evennia.objects.objects import DefaultObject
-
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 
 class ObjectParent:
     """
@@ -25,7 +25,7 @@ class ObjectParent:
     """
 
 
-class Object(ObjectParent, DefaultObject):
+class Object(ContribRPObject):
     """
     This is the root typeclass object, implementing an in-game Evennia
     game object, such as having a location, being able to be

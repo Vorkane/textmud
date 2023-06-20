@@ -7,12 +7,14 @@ is setup to be the "default" character type created by the default
 creation commands.
 
 """
-from evennia.objects.objects import DefaultCharacter
+#from evennia.objects.objects import DefaultCharacter
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter
 from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
 from evennia.utils.evform import EvForm
 from evennia.utils.evtable import EvTable
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import lazy_property
+from evennia.contrib.rpg.traits import TraitHandler
 
 from world.characters.classes import CharacterClasses
 from world.characters.races import Races
@@ -20,7 +22,7 @@ from world.characters.races import Races
 from .objects import ObjectParent
 
 
-class Character(ObjectParent, DefaultCharacter):
+class Character(ContribRPCharacter):
     """
     The Character defaults to reimplementing some of base Object's hook methods with the
     following functionality:
@@ -40,6 +42,25 @@ class Character(ObjectParent, DefaultCharacter):
     at_post_puppet - Echoes "AccountName has entered the game" to the room.
 
     """
+
+    @lazy_property
+    def traits(self):
+        # this adds the handler as .traits
+        return TraitHandler(self)
+    
+    @lazy_property
+    def stats(self):
+        # this adds the handler as .stats
+        return TraitHandler(self, db_attribute_key="stats")
+
+    @lazy_property
+    def skills(self):
+        # this adds the handler as .skills
+        return TraitHandler(self, db_attribute_key="skills")
+    
+    def at_object_creation(self):
+        self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
+
 
     is_pc = True
 
@@ -68,8 +89,6 @@ class Character(ObjectParent, DefaultCharacter):
     totalxp = AttributeProperty(default=1)
     currentxp = AttributeProperty = 1
     pri_xp_tnl = AttributeProperty = 1000
-
-
     
     @lazy_property
     def pri_class(self):

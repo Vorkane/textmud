@@ -6,12 +6,13 @@ Rooms are simple containers that has no location of their own.
 """
 
 from evennia.objects.objects import DefaultRoom
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom
 import textwrap
 
 from .objects import ObjectParent
 
 
-class Room(ObjectParent, DefaultRoom):
+class Room(ContribRPRoom):
     """
     Rooms are like any Object, except their location is None
     (which is default). They also use basetype_setup() to
