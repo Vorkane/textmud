@@ -27,6 +27,25 @@ class CmdStatus(Command):
         
         self.caller.msg(_CHAR_STATUS)
 
+
+class CmdProf(Command):
+    key = "proficiency"
+    aliases = "prof"
+
+    def func(self):
+        _CHAR_STATUS  = (
+        f"\n\n"
+        f"{'< Details >':=^80}\n"
+        f"{'|CSword:|w ':12}{math.trunc(self.caller.proficiencies.sword.value):5}{self.caller.proficiencies.sword.desc() : >15}\n"
+        f"{'|CDagger:|w ':12}{math.trunc(self.caller.proficiencies.dagger.value):5}{self.caller.proficiencies.dagger.desc() : >15}\n"
+        f"{'|CSpear:|w ':12}{math.trunc(self.caller.proficiencies.spear.value):5}{self.caller.proficiencies.spear.desc() : >15}\n"
+        f"{'|CAxe:|w ':12}{math.trunc(self.caller.proficiencies.axe.value):5}{self.caller.proficiencies.axe.desc() : >15}\n"      
+        f"{'':=^80}\n"
+        )
+
+        
+        self.caller.msg(_CHAR_STATUS)
+
 class CmdGain(Command):
     key = "gain"
 

@@ -206,11 +206,12 @@ class TemporaryCharacterSheet:
 
         """
         grid = get_xyzgrid()
-        start_location = grid.get_room(('12', '7', 'riverport'))
-        if start_location:
-            start_location = start_location[0] # The room we got above is a queryset so we get it by index
-        else:
-            start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
+        #start_location = grid.get_room(('12', '7', 'riverport'))
+        start_location = "#39"
+        #if start_location:
+        #    start_location = start_location[0] # The room we got above is a queryset so we get it by index
+        #else:
+        #    start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
 
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
         permissions = settings.PERMISSION_ACCOUNT_DEFAULT

@@ -23,16 +23,19 @@ class Room(ContribRPRoom):
     properties and methods available on all Objects.
     """
 
+    
 
     appearance_template = (
         '{header}'
-        f"{'==='}{' |502{name}|n ' :=<50}\n"
-        '{desc}\n'
-        f"{' |502Characters|n ':=^56}"
-        '{characters}\n'
-        f"{' |502Exits|n ':=^56}\n"
+        f"{'=== '}{'|502{name}|n'}\n"
+        '{desc}\n\n'
+        f"{'=== '}{'|502Obvious Exits|n '}\n"
         '{exits}\n'
+        '\n'
+        '{characters}\n'
+        '{things}\n'
         '{footer}'
+        '\n\n'
     )
 
     # appearance_template = """

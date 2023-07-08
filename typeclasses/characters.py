@@ -43,6 +43,16 @@ class Character(ContribRPCharacter):
 
     """
 
+    def at_pre_move(self, destination, **kwargs):
+        """
+        Called by self.move_to when trying to move somewhere. If this returns
+        False, the move is immediately cancelled.
+        """
+        if self.db.is_sitting:
+            self.msg("You need to stand up first.")
+            return False
+        return True
+
     @lazy_property
     def traits(self):
         # this adds the handler as .traits
@@ -58,9 +68,23 @@ class Character(ContribRPCharacter):
         # this adds the handler as .skills
         return TraitHandler(self, db_attribute_key="skills")
     
+    @lazy_property
+    def proficiencies(self):
+        # this adds the handler as .skills
+        return TraitHandler(self, db_attribute_key="proficiencies")
+    
     def at_object_creation(self):
         self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
+        self.skills.add("Prowl", "Prowl Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
 
+        # Add proficiencies
+        self.proficiencies.add("sword", "Sword Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
+        self.proficiencies.add("dagger", "Dagger Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
+        self.proficiencies.add("spear", "Spear Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
+        self.proficiencies.add("axe", "Axe Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
+        self.proficiencies.add("blunt", "Blunt Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
+        self.proficiencies.add("archery", "Archery Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
+        self.proficiencies.add("throwing", "Throwing Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
 
     is_pc = True
 

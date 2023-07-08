@@ -41,6 +41,8 @@ MULTISESSION_MODE = 2
 AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
 AUTO_PUPPET_ON_LOGIN = False
 MAX_NR_CHARACTERS = 5
+EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand'
+PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes']
 
 FILE_HELP_ENTRY_MODULES = [ 'world.help.combat_help' ]
 
