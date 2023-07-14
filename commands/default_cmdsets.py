@@ -19,6 +19,7 @@ from typeclasses.accounts import CharGenAccount
 from commands import command
 from commands import custom_commands
 from commands import sittables
+from evennia.contrib.game_systems.containers import ContainerCmdSet
 
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -41,6 +42,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(custom_commands.CmdGain())
         self.add(sittables.CmdSit2)
         self.add(sittables.CmdStand2)
+        self.add(ContainerCmdSet)
         #
         # any commands you add below will overload the default ones.
         #

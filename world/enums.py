@@ -24,7 +24,13 @@ class Ability(Enum):
     """
 
     STR = "strength"
+    END = "endurance"
     DEX = "dexterity"
+    AGI = "agility"
+    MAG = "magic"
+    LUK = "luck"
+
+    
     CON = "constitution"
     INT = "intelligence"
     WIS = "wisdom"
@@ -70,6 +76,12 @@ class ObjType(Enum):
     MAGIC = "magic"
     QUEST = "quest"
     TREASURE = "treasure"
+
+class ObjAttributes(Enum):
+    """
+    Object Attributes
+    """
+    WEIGHT = "weight"
 
 
 class CombatRange(Enum):

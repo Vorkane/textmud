@@ -48,6 +48,27 @@ See the `spawn` command and `evennia.prototypes.spawner.spawn` for more info.
 
 """
 
+# base room prototype for XYZGrid rooms in ainneve
+DANMACHI_XYZ_ROOM = {
+        "prototype_parent": "xyz_room",
+        "prototype_key": "danmachi_xyz_room",
+        "typeclass": "typeclasses.rooms.TownRoom",
+    }
+
+ORARIO_XYZ_ROOM = {
+        "prototype_parent": "danmachi_xyz_room",
+        "prototype_key": "orario_xyz_room",
+        "typeclass": "typeclasses.rooms.TownRoom",
+        "tags": [('orario_settlement', 'area_id')]
+    }
+
+
+LANDMARK_ORARIO_ROOM = {
+    "prototype_key": "landmark_orario_room",
+    "desc": "You are standing in front of the city gates.",
+}
+
+
 ## example of module-based prototypes using
 ## the variable name as `prototype_key` and
 ## simple Attributes
