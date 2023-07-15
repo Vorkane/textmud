@@ -13,12 +13,12 @@ class Race:
     wisdom_mod: int = 0
     charisma_mod: int = 0
 
-    strength: int = 0
-    endurance: int = 0
-    dexterity: int = 0
-    agility: int = 0
-    magic: int = 0
-    luck: int = 0
+    base_strength: int = 0
+    base_endurance: int = 0
+    base_dexterity: int = 0
+    base_agility: int = 0
+    base_magic: int = 0
+    base_luck: int = 0
 
 
     def __str__(self):
@@ -34,12 +34,12 @@ class Races:
     Dwarf = Race(
         key="dwarf",
         name="Dwarf",
-        strength=12,
-        endurance=12,
-        dexterity=8,
-        agility=8,
-        magic=10,
-        luck=10,
+        base_strength=12,
+        base_endurance=12,
+        base_dexterity=8,
+        base_agility=8,
+        base_magic=10,
+        base_luck=10,
         strength_mod=1,
         desc="Short and strong.",
     )
@@ -47,12 +47,12 @@ class Races:
     Elf = Race(
         key="elf",
         name="Elf",
-        strength=8,
-        endurance=10,
-        dexterity=8,
-        agility=12,
-        magic=12,
-        luck=10,
+        base_strength=8,
+        base_endurance=10,
+        base_dexterity=8,
+        base_agility=12,
+        base_magic=12,
+        base_luck=10,
         strength_mod=-1,
         wisdom_mod=1,
         desc="Regular elves",
@@ -61,12 +61,12 @@ class Races:
     HalfElf = Race(
         key="half_elf",
         name="Half Elf",
-        strength=10,
-        endurance=10,
-        dexterity=10,
-        agility=10,
-        magic=10,
-        luck=10,
+        base_strength=10,
+        base_endurance=10,
+        base_dexterity=10,
+        base_agility=10,
+        base_magic=10,
+        base_luck=10,
         wisdom_mod=1,
         desc="Bit less average",
     )
@@ -74,24 +74,24 @@ class Races:
     Human = Race(
         key="human",
         name="Human",
-        strength=10,
-        endurance=10,
-        dexterity=10,
-        agility=10,
-        magic=10,
-        luck=10,
+        base_strength=10,
+        base_endurance=10,
+        base_dexterity=10,
+        base_agility=10,
+        base_magic=10,
+        base_luck=10,
         desc="Your average human.",
     )
 
     Pallum = Race(
         key="pallum",
         name="Pallum",
-        strength=8,
-        endurance=8,
-        dexterity=12,
-        agility=12,
-        magic=8,
-        luck=12,
+        base_strength=8,
+        base_endurance=8,
+        base_dexterity=12,
+        base_agility=12,
+        base_magic=8,
+        base_luck=12,
         dexterity_mod=1,
         desc="Smaller in stature, they appear similar to humans. Often called hobbits",
     )
@@ -99,13 +99,12 @@ class Races:
     Rednard = Race(
         key="renard",
         name="Renard",
-        strength=6,
-        endurance=8,
-        dexterity=10,
-        agility=8,
-        magic=14,
-        luck=12,
-        dexterity_mod=1,
+        base_strength=6,
+        base_endurance=8,
+        base_dexterity=10,
+        base_agility=8,
+        base_magic=14,
+        base_luck=12,
         desc="Smaller in stature, they appear similar to humans. Often called hobbits",
     )
 

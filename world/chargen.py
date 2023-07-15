@@ -1,7 +1,3 @@
-"""
-EvAdventure character generation.
-
-"""
 import random
 
 from django.conf import settings
@@ -22,16 +18,23 @@ from .random_tables import chargen_tables
 from .rules import dice
 
 
-
-
 _ABILITIES = {
+    "STR": "strength",
+    "END": "endurance",
+    "DEX": "dexterity",
+    "AGI": "agility",
+    "MAG": "magic",
+    "LUK": "luck"
+}
+
+""" _ABILITIES = {
     "STR": "strength",
     "DEX": "dexterity",
     "CON": "constitution",
     "INT": "intelligence",
     "WIS": "wisdom",
     "CHA": "charisma"
-}
+} """
 
 _TEMP_SHEET = """
 |wName:|n {name}
@@ -42,23 +45,17 @@ _TEMP_SHEET = """
 |w=========Attributes=========|n
 
 |wStrength:|n        {strength}
+|wEndurnace:|n       {endurance}
 |wDexterity:|n       {dexterity}
-|wConstitution:|n    {constitution}
-|wIntelligence:|n    {intelligence}
-|wWisdom:|n          {wisdom}
-|wCharisma:|n        {charisma}
+|wAgility:|n         {agility}
+|wMagic:|n           {magic}
+|wLuck:|n            {luck}
 
 |w============================|n
 
-{description}
-
-|wYour belongings:|n
-{equipment}
 """
 
 _SORTED_RACES = sorted(list(Races.values()), key=lambda race: race.name)
-_SORTED_CLASSES = sorted(list(CharacterClasses.values()), key=lambda pri_class: pri_class.name)
-
 
 class TemporaryCharacterSheet:
     """
@@ -80,127 +77,52 @@ class TemporaryCharacterSheet:
 
     """
 
-    def _random_ability(self):
-        return min(dice.roll("1d6"), dice.roll("1d6"), dice.roll("1d6"))
-
-    def _random_class(self):
-        return random.choice(_SORTED_CLASSES)
-
-    def _random_race(self):
-        return random.choice(_SORTED_RACES)
-    
     def swap_race(self, new_race):
-        if self.race != "None":
-            # Remove previous modifiers
-            self.strength -= self.race.strength_mod
-            self.dexterity -= self.race.dexterity_mod
-            self.constitution -= self.race.constitution_mod
-            self.intelligence -= self.race.intelligence_mod
-            self.wisdom -= self.race.wisdom_mod
-            self.charisma -= self.race.charisma_mod
+        
+        self.race = new_race
 
-            self.race = new_race
+        self.strength = self.race.base_strength
+        self.endurance = self.race.base_endurance
+        self.dexterity = self.race.base_dexterity
+        self.agility = self.race.base_agility
+        self.magic = self.race.base_magic
+        self.luck = self.race.base_luck
 
-            # Apply new modifiers
-            # TODO This should be a trait modifier instead
-            self.strength += self.race.strength_mod
-            self.dexterity += self.race.dexterity_mod
-            self.constitution += self.race.constitution_mod
-            self.intelligence += self.race.intelligence_mod
-            self.wisdom += self.race.wisdom_mod
-            self.charisma += self.race.charisma_mod
-        else:
-            self.race = new_race
-             # Apply new modifiers
-            # TODO This should be a trait modifier instead
-            self.strength += self.race.strength_mod
-            self.dexterity += self.race.dexterity_mod
-            self.constitution += self.race.constitution_mod
-            self.intelligence += self.race.intelligence_mod
-            self.wisdom += self.race.wisdom_mod
-            self.charisma += self.race.charisma_mod
 
     def __init__(self):
-        # name will likely be modified later
-        #self.name = dice.roll_random_table("1d282", chargen_tables["name"])
+
         self.name = ""
         self.race = "None"
         self.pri_class = "None"
 
         self.strength = 5
+        self.endurance = 5
         self.dexterity = 5
-        self.constitution = 5
-        self.intelligence = 5
-        self.wisdom = 5
-        self.charisma = 5        
+        self.agility = 5
+        self.magic = 5
+        self.luck = 5        
 
         self.hp_max = max(18, dice.roll("1d30"))
         self.hp = self.hp_max
 
-
-        # physical attributes (only for rp purposes)
-        physique = dice.roll_random_table("1d20", chargen_tables["physique"])
-        face = dice.roll_random_table("1d20", chargen_tables["face"])
-        skin = dice.roll_random_table("1d20", chargen_tables["skin"])
-        hair = dice.roll_random_table("1d20", chargen_tables["hair"])
-        clothing = dice.roll_random_table("1d20", chargen_tables["clothing"])
-        speech = dice.roll_random_table("1d20", chargen_tables["speech"])
-        virtue = dice.roll_random_table("1d20", chargen_tables["virtue"])
-        vice = dice.roll_random_table("1d20", chargen_tables["vice"])
-        background = dice.roll_random_table("1d20", chargen_tables["background"])
-        misfortune = dice.roll_random_table("1d20", chargen_tables["misfortune"])
-        alignment = dice.roll_random_table("1d20", chargen_tables["alignment"])
-
-        self.ability_changes = 0
-        self.desc = (
-            f"You are {physique} with a {face} face, {skin} skin, {hair} hair, {speech} speech, and"
-            f" {clothing} clothing. You were a {background.title()}, but you were {misfortune} and"
-            f" ended up a knave. You are {virtue} but also {vice}. You tend towards {alignment}."
-        )   
-
-        # random equipment
-        self.armor = dice.roll_random_table("1d20", chargen_tables["armor"])
-
-        _helmet_and_shield = dice.roll_random_table("1d20", chargen_tables["helmets and shields"])
-        self.helmet = "helmet" if "helmet" in _helmet_and_shield else "none"
-        self.shield = "shield" if "shield" in _helmet_and_shield else "none"
-
-        self.weapon = dice.roll_random_table("1d20", chargen_tables["starting weapon"])
-
-        self.backpack = [
-            "ration",
-            "ration",
-            dice.roll_random_table("1d20", chargen_tables["dungeoning gear"]),
-            dice.roll_random_table("1d20", chargen_tables["dungeoning gear"]),
-            dice.roll_random_table("1d20", chargen_tables["general gear 1"]),
-            dice.roll_random_table("1d20", chargen_tables["general gear 2"]),
-        ]
 
     def show_sheet(self):
         """
         Show a temp character sheet, a compressed version of the real thing.
 
         """
-        equipment = (
-            str(item)
-            for item in [self.armor, self.helmet, self.shield, self.weapon] + self.backpack
-            if item
-        )
 
         return _TEMP_SHEET.format(
             name=self.name,
             strength=self.strength,
+            endurance=self.endurance,
             dexterity=self.dexterity,
-            constitution=self.constitution,
-            intelligence=self.intelligence,
-            wisdom=self.wisdom,
-            charisma=self.charisma,
+            agility=self.agility,
+            magic=self.magic,
+            luck=self.luck,
             race=self.race,
-            pri_class=self.pri_class,
             hp=self.hp,
             hp_max=self.hp_max,
-            description=self.desc,
-            equipment=", ".join(equipment),
         )
 
     def apply(self, account):
@@ -218,6 +140,7 @@ class TemporaryCharacterSheet:
 
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
         permissions = settings.PERMISSION_ACCOUNT_DEFAULT
+
         # creating character with given abilities
         new_character = create_object(
             Character,
@@ -227,16 +150,14 @@ class TemporaryCharacterSheet:
             permissions=permissions,
             attributes=(
                 ("strength", self.strength),
-                ("dexterity", self.intelligence),
-                ("constitution", self.constitution),
-                ("intelligence", self.intelligence),
-                ("wisdom", self.wisdom),
-                ("charisma", self.charisma),
+                ("endurance", self.endurance),
+                ("dexterity", self.dexterity),
+                ("agility", self.agility),
+                ("magic", self.magic),
+                ("luck", self.luck),
                 ("race_key", self.race.key),
-                ("pri_class_key", self.pri_class.key),
                 ("hp", self.hp),
                 ("hp_max", self.hp_max),
-                ("desc", self.desc),
             ),
         )
 
@@ -247,7 +168,7 @@ class TemporaryCharacterSheet:
         # spawn equipment
         # TODO: add item prototypes
         # none of the equipment from the random tables have prototypes, so there is no starting gear
-        if self.weapon:
+        """ if self.weapon:
             try:
                 weapon = spawn(self.weapon)
                 new_character.equipment.move(weapon[0])
@@ -281,7 +202,7 @@ class TemporaryCharacterSheet:
                 new_character.equipment.move(item[0])
             except KeyError:
                 logger.log_err(f"[Chargen] Could not spawn Item: Prototype not found for '{item}'.")
-
+ """
         return new_character
 
 
@@ -415,10 +336,10 @@ def node_apply_character(caller, raw_string, **kwargs):
     """
     tmp_character = kwargs["tmp_character"]
 
-    pri_class = _SORTED_CLASSES[0]
+    #pri_class = _SORTED_CLASSES[0]
 
-    caller.msg({pri_class})
-    tmp_character.pri_class = pri_class
+    #caller.msg({pri_class})
+    #tmp_character.pri_class = pri_class
 
     new_character = tmp_character.apply(caller)
     caller.db._playable_characters.append(new_character)
@@ -441,9 +362,9 @@ def start_chargen(caller, session=None):
         "node_change_name": node_change_name,
         "node_swap_abilities": node_swap_abilities,
         "node_apply_character": node_apply_character,
-        "node_show_classes": node_show_classes,
-        "node_select_class": node_select_class,
-        "node_apply_class": node_apply_class,
+        #"node_show_classes": node_show_classes,
+        #"node_select_class": node_select_class,
+        #"node_apply_class": node_apply_class,
         "node_show_races": node_show_races,
         "node_select_race": node_select_race,
         "node_apply_race": node_apply_race,
@@ -461,15 +382,15 @@ def start_chargen(caller, session=None):
         startnode_input=("sgsg", {"tmp_character": tmp_character}),
     )
 
-def node_show_classes(caller, raw_string, **kwargs):
-    """Starting page and Class listing."""
+""" def node_show_classes(caller, raw_string, **kwargs):
+    Starting page and Class listing.
     text = ("""\
-        Select a |cClass|n.
+        #Select a |cClass|n.
 
-        Select one by number below to view its details, or |whelp|n
-        at any time for more info.
-    """)
-
+        #Select one by number below to view its details, or |whelp|n
+        #at any time for more info.
+   # """)
+"""
     options = []
 
     for pri_class in _SORTED_CLASSES:
@@ -481,7 +402,7 @@ def node_show_classes(caller, raw_string, **kwargs):
     return (text, "Type in the number next to the class to have more info."), options
 
 def node_select_class(caller, raw_string, **kwargs):
-    """Class detail and selection menu node."""
+    Class detail and selection menu node.
     try:
         choice = int(raw_string.strip())
         pri_class = _SORTED_CLASSES[choice - 1]
@@ -513,7 +434,7 @@ def node_apply_class(caller, raw_string, **kwargs):
     tmp_character.pri_class = pri_class
 
     return node_chargen(caller, '', tmp_character=tmp_character)
-
+ """
 
 def node_show_races(caller, raw_string, **kwargs):
     """Starting page and Class listing."""

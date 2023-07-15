@@ -7,6 +7,9 @@ Commands describe the input the account can do to the game.
 
 from evennia.commands.command import Command as BaseCommand
 from evennia import default_cmds
+from evennia.contrib.rpg.health_bar import display_meter
+
+
 
 # class MuxCommand(default_cmds.MuxCommand):
     # ...
@@ -45,8 +48,12 @@ class Command(BaseCommand):
     def at_post_cmd(self):
         "called after self.func()."
         caller = self.caller   
-        prompt = f"\n|rHP|n: |r{caller.db.hp}|n(|r{caller.db.hp_max}|n) |cMP|n: |c{caller.db.mana}|n(|c{caller.db.mana_max}|n) |yStamina|n: |y{caller.db.stamina}|n(|y{caller.db.stamina_max}|n)\n"
-        caller.msg(prompt=prompt)
+        #prompt = f"\n|rHP|n: |r{caller.db.hp}|n(|r{caller.db.hp_max}|n) |cMP|n: |c{caller.db.mana}|n(|c{caller.db.mana_max}|n) |yStamina|n: |y{caller.db.stamina}|n(|y{caller.db.stamina_max}|n)\n"
+        #caller.msg(prompt=prompt)
+
+        health_bar = display_meter(caller.db.hp, caller.db.hp_max, length=15, align="center")
+        mana_bar = display_meter(caller.db.mana, caller.db.mana_max, length=15, align="center", fill_color=['R','O','B'])
+        caller.msg(prompt = f"{health_bar} {mana_bar}")
 
     pass
 

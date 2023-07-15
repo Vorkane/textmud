@@ -90,11 +90,11 @@ class Character(ContribRPCharacter):
 
     # these are the ability bonuses. Defense is always 10 higher
     strength = AttributeProperty(default=1) #brawn
+    endurance = AttributeProperty(default=1)
     dexterity = AttributeProperty(default=1) #deftness or nimbleness
-    constitution = AttributeProperty(default=1) #vitality
-    intelligence = AttributeProperty(default=1) #brilliance
-    wisdom = AttributeProperty(default=1) #insight
-    charisma = AttributeProperty(default=1) #allure
+    agility = AttributeProperty(default=1) #vitality
+    magic = AttributeProperty(default=1) #brilliance
+    luck = AttributeProperty(default=1) #insight
 
     cclass_key =  AttributeProperty()
     race_key = AttributeProperty()
