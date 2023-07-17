@@ -18,6 +18,8 @@ from evennia.contrib.rpg.traits import TraitHandler
 
 from world.characters.classes import CharacterClasses
 from world.characters.races import Races
+from evennia.contrib.rpg.health_bar import display_meter
+
 
 from .objects import ObjectParent
 
@@ -105,6 +107,10 @@ class Character(ContribRPCharacter):
     mana_max = AttributeProperty(default=4)
     stamina = AttributeProperty(default=2)
     stamina_max = AttributeProperty(default=4)
+
+    # Resources
+    copper = AttributeProperty(default=0)
+    iron = AttributeProperty(default=0)
 
 
     level = AttributeProperty(default=1)  # Just a bragging stat, for now.

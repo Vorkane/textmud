@@ -1,2 +1,5 @@
 {
+    "python.analysis.extraPaths": [
+        "U:\\evennia\\evennia\\evennia"
+    ]
 }

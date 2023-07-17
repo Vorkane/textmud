@@ -27,6 +27,7 @@ put secret game- or server-specific settings in secret_settings.py.
 # Use the defaults from Evennia unless explicitly overridden
 from evennia.settings_default import *
 
+
 ######################################################################
 # Evennia base server config
 ######################################################################
@@ -41,6 +42,8 @@ MULTISESSION_MODE = 2
 AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
 AUTO_PUPPET_ON_LOGIN = False
 MAX_NR_CHARACTERS = 5
+DEBUG = True
+#COMMAND_DEFAULT_CLASS = "commands.command.Command"
 
 
 #CHARGEN_MENU = "world.chargen_menu"

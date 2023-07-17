@@ -45,6 +45,10 @@ class Ability(Enum):
     ALLEGIANCE_NEUTRAL = "neutral"
     ALLEGIANCE_FRIENDLY = "friendly"
 
+class ObjResources(Enum):
+    iron = "Iron"
+    copper = "Copper"
+
 
 class WieldLocation(Enum):
     """

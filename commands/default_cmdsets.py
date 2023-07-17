@@ -16,13 +16,48 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 
 from evennia import default_cmds
 from typeclasses.accounts import CharGenAccount
-from commands import command
 from commands import custom_commands
 from commands import sittables
-#from evennia.contrib.game_systems.containers import ContainerCmdSet
+from evennia.contrib.game_systems.containers import ContainerCmdSet
+from world.commands.mining import CmdMine
+
+from functools import wraps
+
+from evennia.commands.default import (
+    cmdset_character,
+    cmdset_account,
+    cmdset_session,
+    cmdset_unloggedin,
+)
 
 
-class CharacterCmdSet(default_cmds.CharacterCmdSet):
+
+def check_errors(func):
+    """
+    Decorator for catching/printing out any errors in method calls. Designed for safer imports.
+    Args:
+        func: Function to decorate
+
+    Returns:
+        Wrapped function
+    """
+    # noinspection PyBroadException
+    @wraps(func)
+    def new_func(*args, **kwargs):
+        """Wrapper around function with exception handling"""
+        try:
+            return func(*args, **kwargs)
+        except Exception:
+            import traceback
+
+            traceback.print_exc()
+
+    return new_func
+
+
+
+
+class CharacterCmdSet(cmdset_character.CharacterCmdSet):
     """
     The `CharacterCmdSet` contains general in-game commands like `look`,
     `get`, etc available on in-game Character objects. It is merged with
@@ -30,22 +65,33 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
 
     key = "DefaultCharacter"
+    priority = 101
 
     def at_cmdset_creation(self):
         """
         Populates the cmdset
         """
-        super().at_cmdset_creation()
-        #self.add(command.CmdLook())
+        #super().at_cmdset_creation()
+        #self.add_standard_cmdsets()
+        self.add(custom_commands.CmdLook234())
+        self.add(custom_commands.CmdLook())
         self.add(custom_commands.CmdStatus())
         self.add(custom_commands.CmdProf())
         self.add(custom_commands.CmdGain())
         self.add(sittables.CmdSit2)
         self.add(sittables.CmdStand2)
         self.add(ContainerCmdSet)
+        self.add(CmdMine())
         #
         # any commands you add below will overload the default ones.
         #
+
+
+    @check_errors
+    def add_standard_cmdsets(self):
+        """Add different command sets that all characters should have"""
+        #self.add(custom_commands.CmdLook())
+        self.add(custom_commands.CmdLook123())
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
