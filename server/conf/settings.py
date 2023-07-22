@@ -42,8 +42,12 @@ MULTISESSION_MODE = 2
 AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
 AUTO_PUPPET_ON_LOGIN = False
 MAX_NR_CHARACTERS = 5
-DEBUG = True
+DEBUG = False
 #COMMAND_DEFAULT_CLASS = "commands.command.Command"
+
+INSTALLED_APPS += ('web.chargen',
+                   'web.character',
+)
 
 
 #CHARGEN_MENU = "world.chargen_menu"

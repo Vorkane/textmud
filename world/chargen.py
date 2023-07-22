@@ -27,15 +27,6 @@ _ABILITIES = {
     "LUK": "luck"
 }
 
-""" _ABILITIES = {
-    "STR": "strength",
-    "DEX": "dexterity",
-    "CON": "constitution",
-    "INT": "intelligence",
-    "WIS": "wisdom",
-    "CHA": "charisma"
-} """
-
 _TEMP_SHEET = """
 |wName:|n {name}
 |wRace:|n {race} 

@@ -45,6 +45,10 @@ class Character(ContribRPCharacter):
 
     """
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('character:sheet', kwargs={'object_id':self.id})
+
     def at_pre_move(self, destination, **kwargs):
         """
         Called by self.move_to when trying to move somewhere. If this returns
