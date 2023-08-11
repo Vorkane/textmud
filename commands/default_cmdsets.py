@@ -18,17 +18,26 @@ from evennia import default_cmds
 from typeclasses.accounts import CharGenAccount
 from commands import custom_commands
 from commands import sittables
+
+
+# Evennia Contribs
+from evennia.contrib.rpg.character_creator.character_creator import ContribCmdCharCreate
+from evennia.contrib.base_systems.building_menu import GenericBuildingCmd
 from evennia.contrib.game_systems.containers import ContainerCmdSet
-from world.commands.mining import CmdMine
+from evennia.contrib.game_systems.containers import containers
+#from evennia.contrib.grid import extended_room
 
 from functools import wraps
 
-from evennia.commands.default import (
-    cmdset_character,
-    cmdset_account,
-    cmdset_session,
-    cmdset_unloggedin,
-)
+#from .ooc.chargen import ChargenWelcomeCmdset
+
+# World Custom
+from world.commands.mining import CmdMine
+from world.commands.character.drink import CmdFill
+from world.commands.character.equip import CmdWield
+from world.commands.character.equip import CmdEquip
+from world.commands.character.equip import CmdRemove
+from .building.building import EditCmd
 
 
 
@@ -55,9 +64,7 @@ def check_errors(func):
     return new_func
 
 
-
-
-class CharacterCmdSet(cmdset_character.CharacterCmdSet):
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
     The `CharacterCmdSet` contains general in-game commands like `look`,
     `get`, etc available on in-game Character objects. It is merged with
@@ -65,23 +72,28 @@ class CharacterCmdSet(cmdset_character.CharacterCmdSet):
     """
 
     key = "DefaultCharacter"
-    priority = 101
 
     def at_cmdset_creation(self):
         """
         Populates the cmdset
         """
-        #super().at_cmdset_creation()
-        #self.add_standard_cmdsets()
-        self.add(custom_commands.CmdLook234())
-        self.add(custom_commands.CmdLook())
+        super().at_cmdset_creation()
+        self.add_standard_cmdsets()
+        #self.add_blacksmith_standard_cmdsets()
+        self.add(CmdEquip())
+        self.add(CmdWield())
+        self.add(CmdRemove())
+        self.add(GenericBuildingCmd())
+        self.add(EditCmd())       
         self.add(custom_commands.CmdStatus())
+        self.add(custom_commands.CmdSheet())
         self.add(custom_commands.CmdProf())
         self.add(custom_commands.CmdGain())
         self.add(sittables.CmdSit2)
         self.add(sittables.CmdStand2)
-        self.add(ContainerCmdSet)
-        self.add(CmdMine())
+        self.add(CmdFill())
+        #self.add(ContainerCmdSet)
+        
         #
         # any commands you add below will overload the default ones.
         #
@@ -90,8 +102,20 @@ class CharacterCmdSet(cmdset_character.CharacterCmdSet):
     @check_errors
     def add_standard_cmdsets(self):
         """Add different command sets that all characters should have"""
+        self.add(custom_commands.CmdInventoryExtended())
+        self.add(custom_commands.CmdExtendedLook())
+        self.add(custom_commands.CmdExtendedGet())
+        self.add(custom_commands.CmdExtendedDrop())
+        #self.add(containers.CmdContainerGet)
+        self.add(containers.CmdPut)
         #self.add(custom_commands.CmdLook())
-        self.add(custom_commands.CmdLook123())
+        #self.add(custom_commands.CmdLook123())
+        #self.add(extended_room.ExtendedRoomCmdSet)
+        #self.add(custom_commands.CmdLook234())
+
+    def add_blacksmith_standard_cmdsets(self):
+        self.add(CmdMine())
+
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
@@ -110,6 +134,7 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         """
         super().at_cmdset_creation()
         self.add(CharGenAccount())
+        #self.add(ChargenWelcomeCmdset())
         #
         # any commands you add below will overload the default ones.
         #

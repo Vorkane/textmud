@@ -1,7 +1,34 @@
-
-
-from evennia import EvMenu
+from evennia.utils import EvMenu
 from .chargen import TemporaryCharacterSheet
+
+
+import inflect
+from random import choice
+from typeclasses.characters import Character
+
+from evennia.prototypes.spawner import spawn
+from evennia.utils import dedent
+from evennia.utils.evtable import EvTable
+
+_INFLECT = inflect.engine()
+
+#########################################################
+#                   Welcome Page
+#
+# https://github.com/InspectorCaracal/evennia-minimud/blob/main/world/chargen_menu.py
+#
+#########################################################
+
+def start_chargen(caller, session=None):
+    node_change_name()
+
+    # menutree = {
+    #     "node_chargen": node_chargen
+    # }
+
+    # tmp_character = TemporaryCharacterSheet()
+
+    # EvMenu(caller, menutree, session=session, tmp_character=tmp_character)
 
 def node_chargen(caller, raw_string, **kwargs):
 
@@ -24,49 +51,48 @@ def node_chargen(caller, raw_string, **kwargs):
 
     return text, options
 
-def _update_name(caller, raw_string, **kwargs):
 
+def _update_name(caller, raw_string, **kwargs):
     if raw_string:
         tmp_character = kwargs["tmp_character"]
-        tmp_character.name = raw_string.lower().capatilize()
+        tmp_character.name = raw_string.lower().capitalize()
     return "node_chargen", kwargs
 
 def node_change_name(caller, raw_string, **kwargs):
 
     tmp_character = kwargs["tmp_character"]
 
-    text = (
-        f"Your current name is |w{tmp_character.name}|n. "
-        "Enter a new name or leave empty to abort."
-    )
+    if tmp_character.name == "":
+        text = (
+            f"What would you like to be named? "
+            "Enter name or leave empty to abort."
+        )
+    elif tmp_character.name != "":
+        text = (
+            f"Your current name is |w{tmp_character.name}|n. "
+            "Enter a new name or leave empty to abort."
+        )
 
     options = {
-            "key": "_default",
-            "goto": (_update_name, kwargs)
-
+        "key": "_default",
+        "goto": (_update_name, kwargs)
     }
-    return text, options   
+    return text, optionss
 
-def node_apply_character(caller, raw_string, **kwargs):
+def menunode_welcome(caller):
+    """Starting page."""
+    # make sure it's a player not a generic character
+    if not caller.new_char.is_typeclass("typeclasses.characters.Character"):
+        # it's not - swap it
+        caller.new_char.swap_typeclass("typeclasses.characters.Character")
 
-    tmp_character = kwargs["tmp_character"]
-    new_character = tmp_character.apply(caller)
+    text = dedent(
+        """\
+        |wWelcome to the game!|n
 
-    caller.account.db._playable_characters = [new_character]
-
-    text = "Character created!"
-
-    return text, None
-
-
-def start_chargen(caller, session=None):
-
-    menutree = {
-        "node_chargen": node_chargen,
-        "node_change_name": node_change_name,
-        "node_apply_character": node_apply_character
-    }
-
-    tmp_character = TemporaryCharacterSheet() 
-
-    EvMenu(caller, menutree, session=session, tmp_character=tmp_character)
+        During the character creation process, you can go forwards and back between steps,
+        as well as quit and resume later. Feel free to take your time!
+    """
+    )
+    options = {"desc": "Let's begin!", "goto": "menunode_points_base"}
+    return text, options

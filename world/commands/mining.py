@@ -1,4 +1,4 @@
-from evennia import Command
+from evennia import Command, create_object
 from evennia.utils import delay
 
 class CmdMine(Command):
@@ -30,7 +30,33 @@ class CmdMine(Command):
         # Add the mined ore to the player's inventory
         # Assuming you have an inventory system in place
         caller.msg(f"You mine {mined_ore_amount} {ore_type} ore.")
-        caller.db.iron += 1
+
+        # Create the ore object and place it in the player's inventory
+        """ ore_object = create_object(
+            typeclass="typeclasses.orenodes.OreNode",
+            key=f"{ore_type} ore",
+            location=caller,
+            home=caller,
+        ) """
+
+        if ore_type == "iron":
+            ore_object = create_object(
+                typeclass="world.items.mining.IronOre",
+                key=f"{ore_type} ore",
+                location=caller,
+                home=caller
+            )
+        elif ore_type == "copper":
+            ore_object = create_object(
+                typeclass="world.items.mining.CooperOre",
+                key=f"{ore_type} ore",
+                location=caller,
+                home=caller
+            )
+        caller.msg(f"{mined_ore_amount} {ore_type} ore added to your inventory.")
+
+
+        #caller.db.iron += 1
         # Add mined_ore_amount of ore to the player's inventory here
 
         # Mark the ore node as mined and schedule its respawn

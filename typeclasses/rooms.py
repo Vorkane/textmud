@@ -7,6 +7,9 @@ Rooms are simple containers that has no location of their own.
 
 from evennia.objects.objects import DefaultRoom
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+
+
 import textwrap
 
 from .objects import ObjectParent
@@ -43,13 +46,13 @@ class Room(ContribRPRoom):
 
     appearance_template = (
         '{header}'
-        f"{'=== '}{'|502{name}|n'}\n"
+        f"{'=== '}{'|502{name}|n'}\n\n"
         '{desc}\n\n'
-        f"{'=== '}{'|502Obvious Exits|n '}\n"
-        '{exits}\n'
-        '\n'
-        '{characters}\n'
         '{things}\n'
+        '\n'
+        f"{'=== '}{'|502Exits|n '}\n"
+        '{exits}\n\n'
+        '{characters}\n'        
         '{footer}'
         '\n\n'
     )

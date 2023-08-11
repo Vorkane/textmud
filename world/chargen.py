@@ -1,21 +1,20 @@
-import random
-
 from django.conf import settings
 
-from evennia import create_object, logger
+from evennia import create_object
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 from evennia.objects.models import ObjectDB
-from evennia.prototypes.spawner import spawn
 from evennia.utils.evmenu import EvMenu
-from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom
-from evennia.contrib.grid.xyzgrid import xyzgrid
+from evennia.utils import dedent
 
 from typeclasses.characters import Character
-from world.characters.classes import CharacterClasses
 from world.characters.races import Races
 
-from .random_tables import chargen_tables
 from .rules import dice
+
+from world.characters.races import _SORTED_ALL_RACES
+from typeclasses.characters import Character
+
+import world.characters.races
 
 
 _ABILITIES = {
@@ -46,8 +45,6 @@ _TEMP_SHEET = """
 
 """
 
-_SORTED_RACES = sorted(list(Races.values()), key=lambda race: race.name)
-
 class TemporaryCharacterSheet:
     """
     This collects all the rules for generating a new character. An instance of this class is used
@@ -68,23 +65,11 @@ class TemporaryCharacterSheet:
 
     """
 
-    def swap_race(self, new_race):
-        
-        self.race = new_race
-
-        self.strength = self.race.base_strength
-        self.endurance = self.race.base_endurance
-        self.dexterity = self.race.base_dexterity
-        self.agility = self.race.base_agility
-        self.magic = self.race.base_magic
-        self.luck = self.race.base_luck
-
-
     def __init__(self):
 
         self.name = ""
         self.race = "None"
-        self.pri_class = "None"
+        self.cl_race = ""
 
         self.strength = 5
         self.endurance = 5
@@ -96,6 +81,21 @@ class TemporaryCharacterSheet:
         self.hp_max = max(18, dice.roll("1d30"))
         self.hp = self.hp_max
 
+    def _swap_race(self, new_race):
+
+        _race = new_race
+
+        #get_race_class = getattr(world.characters.races, _race)
+
+        self.race_type = _race
+        self.cl_race = _race
+        self.race = self.race_type.name
+        self.strength = self.race_type.str_base
+        self.endurance = self.race_type.end_base
+        self.dexterity = self.race_type.dex_base
+        self.agility = self.race_type.agi_base
+        self.magic = self.race_type.mag_base
+        self.luck = self.race_type.luk_base
 
     def show_sheet(self):
         """
@@ -105,13 +105,13 @@ class TemporaryCharacterSheet:
 
         return _TEMP_SHEET.format(
             name=self.name,
+            race=self.race,
             strength=self.strength,
             endurance=self.endurance,
             dexterity=self.dexterity,
             agility=self.agility,
             magic=self.magic,
-            luck=self.luck,
-            race=self.race,
+            luck=self.luck,            
             hp=self.hp,
             hp_max=self.hp_max,
         )
@@ -139,19 +139,26 @@ class TemporaryCharacterSheet:
             location=start_location,
             home=default_home,
             permissions=permissions,
-            attributes=(
-                ("strength", self.strength),
-                ("endurance", self.endurance),
-                ("dexterity", self.dexterity),
-                ("agility", self.agility),
-                ("magic", self.magic),
-                ("luck", self.luck),
-                ("race_key", self.race.key),
-                ("hp", self.hp),
-                ("hp_max", self.hp_max),
-            ),
         )
 
+        new_character.db.race = self.cl_race.name
+        new_character.db.slots = self.cl_race.slots
+        new_character.db.limbs = self.cl_race.limbs
+        new_character.db.size = self.cl_race.size
+
+        new_character.stats.STR.base = int(self.strength)
+        new_character.stats.END.base = int(self.endurance)
+        new_character.stats.DEX.base = int(self.dexterity)
+        new_character.stats.AGI.base = int(self.agility)
+        new_character.stats.MAG.base = int(self.magic)
+        new_character.stats.LUK.base = int(self.luck)
+
+        new_character.stats.HP.max = int(10 + new_character.stats.END.base * 1.5)
+        new_character.stats.HP.current = int(new_character.stats.HP.max)
+
+        new_character.stats.MP.max = int(10 + new_character.stats.MAG.base * 0.5)
+        new_character.stats.MP.current = int(new_character.stats.MP.max)
+        
         new_character.locks.add(
             "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
             " perm(Admin)" % (new_character.id, account.id, account.id)
@@ -197,130 +204,196 @@ class TemporaryCharacterSheet:
         return new_character
 
 
-# chargen menu
+##########################################################
+# 
+# chargen menu section
+#
+##########################################################
 
+##########################################################
+#               Start Character Generation
+##########################################################
 
-def node_chargen(caller, raw_string, **kwargs):
+def start_chargen(caller, session=None):
+    #node_initial_name()
+
+    menutree = {
+         "menunode_welcome": menunode_welcome,
+         "menunode_rules": menunode_rules,
+         "menunode_name": menunode_name,
+         "menunode_base": menunode_base,
+         "menunode_show_race": menunode_show_race,
+         "menunode_select_race": menunode_select_race,
+         "menunode_apply_race": menunode_apply_race,
+         "menunode_apply": menunode_apply
+    }
+
+    tmp_character = TemporaryCharacterSheet()
+
+    EvMenu(caller, menutree, session=session, startnode="menunode_welcome", startnode_input=("sgsg", {"tmp_character": tmp_character}))
+
+##########################################################
+#               Welcome page
+##########################################################
+
+def menunode_welcome(caller, **kwargs):
+
+    caller.msg("\n" * settings.CLIENT_DEFAULT_HEIGHT)
+
+    tmp_character = kwargs["tmp_character"]
+
+    """ Starting Page. """
+    text = dedent(
+        """\
+        |wWelcome to Character Creation!|n
+
+        This is the starting node for all brand new characters. It's a good place to
+        remind players that they can exit the character creator and resume later,
+        especially if you're going to have a really long chargen process.     
     """
-    This node is the central point of chargen. We return here to see our current
-    sheet and break off to edit different parts of it.
+    )
 
-    In Knave, not so much can be changed.
+    help = "You can explain the commands for exiting and resuming more specifically here."
+    options = {"desc": "Let's begin!", "goto": ("menunode_rules", kwargs)}
+
+    return (text, help), options
+
+    
+
+##########################################################
+#               Rules
+##########################################################
+
+def menunode_rules(caller, **kwargs):
+
+    caller.msg("\n" * settings.CLIENT_DEFAULT_HEIGHT)
+
+    tmp_character = kwargs["tmp_character"]
+
+    text = dedent(
+        """\
+           Have you read the rules and agree to abide by them? 
     """
+    )
+    options = [
+        {"desc": "I agree to the rules", "goto": ("menunode_name", kwargs)},
+        {"desc": "I do not agree to the rules", "goto": "node_change_name"},
+    ]
+
+    return text, options
+
+##########################################################
+#               Change your Name
+##########################################################
+
+def menunode_name(caller, raw_string, **kwargs):
+
+    caller.msg("\n" * settings.CLIENT_DEFAULT_HEIGHT)    
+
+    tmp_character = kwargs["tmp_character"]
+
+    if tmp_character.name:
+        text = (
+            f"You are already name |g{tmp_character.name}|n.\n"
+             "What would you like your new name to be named?\n"
+             "Enter name or leave empty to abort."
+        )
+    else:
+        text = (
+            f"What would you like to be named?\n"
+             "Enter name or leave empty to abort."
+        )
+
+    options = {
+        "key": "_default",
+        "goto": (_update_name, kwargs)
+    }
+    return text, options
+
+def _update_name(caller, raw_string, **kwargs):
+
+    key = raw_string.strip()
+
+    from evennia.objects.models import ObjectDB
+    typeclass = settings.BASE_CHARACTER_TYPECLASS
+
+    if ObjectDB.objects.filter(db_typeclass_path=typeclass, db_key__iexact=key):
+        # check if this Character already exists. Note that we are only
+        # searching the base character typeclass here, not any child
+        # classes.
+        caller.msg("|rA character named '|w%s|r' already exists.|n" % key)
+        return
+    else:
+        tmp_character = kwargs["tmp_character"]
+        tmp_character.name = key.lower().capitalize()
+
+    # options = [
+    #     {"key": ("Yes", "y"), "desc": f"Confirm you want to be name |w{tmp_character.name}|n", "goto": ("menunode_base", kwargs)},
+    #     {"key": ("No", "n"), "desc": f"Change my name.", "goto": "menunode_name"},
+    # ]
+    return "menunode_base", kwargs
+
+def menunode_base(caller, raw_string, **kwargs):
+
     tmp_character = kwargs["tmp_character"]
 
     text = tmp_character.show_sheet()
 
-    options = [{"desc": "Change your name", "goto": ("node_change_name", kwargs)}]
-    #if tmp_character.ability_changes <= 0:
-    #    options.append(
-    #        {
-    #            "desc": "Swap two of your ability scores (once)",
-    #            "goto": ("node_swap_abilities", kwargs),
-    #        }
-    #    )
-    options.append(
-        {"desc": "Change your race", "goto": ("node_show_races", kwargs)}
-    )
-    #options.append(
-    #    {"desc": "Change your class", "goto": ("node_show_classes", kwargs)}
-    #)
-    options.append(
-        {"desc": "Accept and create character\n", "goto": ("node_apply_character", kwargs)},
+    options = [
+        {"desc": "Change your name.", "goto": ("menunode_name", kwargs)},
+        {"desc": "Change your race.", "goto": ("menunode_show_race", kwargs)},
+        {"desc": "Accept and create the character.", "goto": ("menunode_apply", kwargs)}
+    ]
+
+    return text, options
+
+def menunode_show_race(caller, raw_string, **kwargs):
+    
+    text = """\
+        Select a |cRace|n.
+
+        Select one by number below to view its details, or |whelp|n
+        at any time for info.        
+    """
+    
+    options = []
+    
+    for race in _SORTED_ALL_RACES:
+        options.append({
+            "desc": "|c{}|n".format(race),
+            "goto": ("menunode_select_race", {"race": race, **kwargs}),
+
+        })
+    return (text, "Select a race to show it's details"), options
+
+def menunode_select_race(caller, raw_string, **kwargs):
+    try:
+        choice = int(raw_string.strip())
+        _race = _SORTED_ALL_RACES[choice -1]
+    except (ValueError, KeyError, IndexError):
+        caller.msg("|rInvalid choice. Try again.")
+        return None
+    
+    get_race_class = getattr(world.characters.races, _race)
+
+    text = get_race_class.desc + "\nWould you like to become this race?"
+    options = (
+        {"key": ("Yes", "y"), "desc": f"Become {get_race_class.name}", "goto": ("menunode_apply_race", {'race': get_race_class, **kwargs}),},
+        {"key": ("No", "n", "_default"), "desc": "Return to main menu", "goto": "menunode_show_race"}
     )
 
     return text, options
 
-
-def _update_name(caller, raw_string, **kwargs):
-    """
-    Used by node_change_name below to check what user entered and update the name if appropriate.
-
-    """
-    if raw_string:
-        tmp_character = kwargs["tmp_character"]
-        tmp_character.name = raw_string.lower().capitalize().strip()
-
-    return "node_chargen", kwargs
-
-
-def node_change_name(caller, raw_string, **kwargs):
-    """
-    Change the random name of the character.
-
-    """
+def menunode_apply_race(caller, raw_string, **kwargs):
+    race = kwargs.get('race')
+    get_race_class = getattr(world.characters.races, race)
     tmp_character = kwargs["tmp_character"]
+    tmp_character._swap_race(get_race_class)
+    caller.msg('Swapper race!')
 
-    text = (
-        f"Your current name is |w{tmp_character.name}|n. Enter a new name or leave empty to abort."
-    )
+    return menunode_base(caller, '', tmp_character=tmp_character)
 
-    options = {"key": "_default", "goto": (_update_name, kwargs)}
-
-    return text, options
-
-
-def _swap_abilities(caller, raw_string, **kwargs):
-    """
-    Used by node_swap_abilities to parse the user's input and swap ability
-    values.
-
-    """
-    if raw_string:
-        abi1, *abi2 = raw_string.split(" ", 1)
-        if not abi2:
-            caller.msg("That doesn't look right.")
-            return None, kwargs
-        abi2 = abi2[0]
-        abi1, abi2 = abi1.upper().strip(), abi2.upper().strip()
-        if abi1 not in _ABILITIES or abi2 not in _ABILITIES:
-            caller.msg("Not a familiar set of abilites.")
-            return None, kwargs
-
-        # looks okay = swap values. We need to convert STR to strength etc
-        tmp_character = kwargs["tmp_character"]
-        abi1 = _ABILITIES[abi1]
-        abi2 = _ABILITIES[abi2]
-        abival1 = getattr(tmp_character, abi1)
-        abival2 = getattr(tmp_character, abi2)
-
-        setattr(tmp_character, abi1, abival2)
-        setattr(tmp_character, abi2, abival1)
-
-        tmp_character.ability_changes += 1
-
-    return "node_chargen", kwargs
-
-
-def node_swap_abilities(caller, raw_string, **kwargs):
-    """
-    One is allowed to swap the values of two abilities around, once.
-
-    """
-    tmp_character = kwargs["tmp_character"]
-
-    text = f"""
-Your current abilities:
-
-STR +{tmp_character.strength}
-DEX +{tmp_character.dexterity}
-CON +{tmp_character.constitution}
-INT +{tmp_character.intelligence}
-WIS +{tmp_character.wisdom}
-CHA +{tmp_character.charisma}
-
-You can swap the values of two abilities around.
-You can only do this once, so choose carefully!
-
-To swap the values of e.g.  STR and WIL, write |wSTR WIL|n. Empty to abort.
-"""
-
-    options = {"key": "_default", "goto": (_swap_abilities, kwargs)}
-
-    return text, options
-
-
-def node_apply_character(caller, raw_string, **kwargs):
+def menunode_apply(caller, raw_string, **kwargs):
     """
     End chargen and create the character. We will also puppet it.
 
@@ -341,144 +414,46 @@ def node_apply_character(caller, raw_string, **kwargs):
 
     return text, None
 
+# def node_chargen(caller, raw_string, **kwargs):
 
-def start_chargen(caller, session=None):
-    """
-    This is a start point for spinning up the chargen from a command later.
+#     tmp_character = kwargs["tmp_character"]
 
-    """
+#     text = tmp_character.show_sheet()
 
-    menutree = {
-        "node_chargen": node_chargen,
-        "node_change_name": node_change_name,
-        "node_swap_abilities": node_swap_abilities,
-        "node_apply_character": node_apply_character,
-        #"node_show_classes": node_show_classes,
-        #"node_select_class": node_select_class,
-        #"node_apply_class": node_apply_class,
-        "node_show_races": node_show_races,
-        "node_select_race": node_select_race,
-        "node_apply_race": node_apply_race,
+#     options = [
+#         {
+#             "desc": "Change your name",
+#             "goto": ("node_change_name", kwargs)
+#         }
+#     ]
+#     options.append(
+#         {
+#             "desc": "Accept and create character",
+#             "goto": ("node_apply_character", kwargs)
+#         },
+#     )
 
-    }
-
-    # this generates all random components of the character
-    tmp_character = TemporaryCharacterSheet()
-
-    EvMenu(
-        caller,
-        menutree,
-        startnode="node_chargen",
-        session=session,
-        startnode_input=("sgsg", {"tmp_character": tmp_character}),
-    )
-
-""" def node_show_classes(caller, raw_string, **kwargs):
-    Starting page and Class listing.
-    text = ("""\
-        #Select a |cClass|n.
-
-        #Select one by number below to view its details, or |whelp|n
-        #at any time for more info.
-   # """)
-"""
-    options = []
-
-    for pri_class in _SORTED_CLASSES:
-        options.append({
-            "desc": "|c{}|n".format(pri_class.name),
-            "goto": ("node_select_class", {"pri_class": pri_class, **kwargs}),
-        })
-
-    return (text, "Type in the number next to the class to have more info."), options
-
-def node_select_class(caller, raw_string, **kwargs):
-    Class detail and selection menu node.
-    try:
-        choice = int(raw_string.strip())
-        pri_class = _SORTED_CLASSES[choice - 1]
-    except (ValueError, KeyError, IndexError):
-        caller.msg("|rInvalid choice. Try again.")
-        return None
-
-    text = pri_class.desc + "\n\nWould you like to become this class?"
-    help = "Examine the properties of this class and decide whether\n"
-    help += "to use its starting attributes for your character."
-    options = (
-        {
-            "key": ("Yes", "ye", "y"),
-            "desc": f"Become {pri_class.name}",
-            "goto": ("node_apply_class", {"pri_class": pri_class, **kwargs}),
-        },
-        {
-            "key": ("No", "n", "_default"),
-            "desc": "Return to Class selection",
-            "goto": "node_show_classes"
-        }
-    )
-    return (text, help), options
+#     return text, options
 
 
-def node_apply_class(caller, raw_string, **kwargs):
-    pri_class = kwargs.get('pri_class')
-    tmp_character = kwargs["tmp_character"]
-    tmp_character.pri_class = pri_class
-
-    return node_chargen(caller, '', tmp_character=tmp_character)
- """
-
-def node_show_races(caller, raw_string, **kwargs):
-    """Starting page and Class listing."""
-    text = """\
-        Select a |cRace|n.
-
-        Select one by number below to view its details, or |whelp|n
-        at any time for more info.
-    """
-
-    options = []
-
-    for race in _SORTED_RACES:
-        options.append({
-            "desc": "|c{}|n".format(race.name),
-            "goto": ("node_select_race", {"race": race, **kwargs}),
-        })
-
-    return (text, "Select a race to show its details"), options
 
 
-def node_select_race(caller, raw_string, **kwargs):
-    """Race detail and selection menu node."""
-    try:
-        choice = int(raw_string.strip())
-        race = _SORTED_RACES[choice - 1]
-    except (ValueError, KeyError, IndexError):
-        caller.msg("|rInvalid choice. Try again.")
-        return None
 
-    text = race.desc + "\nWould you like to become this race?"
-    help = "Examine the properties of this race and decide whether\n"
-    help += "to use its starting attributes for your character."
-    options = (
-        {
-            "key": ("Yes", "ye", "y"),
-            "desc": f"Become {race.name}",
-            "goto": ("node_apply_race", {'race': race, **kwargs}),
-        },
-        {
-            "key": ("No", "n", "_default"),
-            "desc": "Return to Class selection",
-            "goto": "node_show_races"
-        }
-    )
+# def menunode_welcome(caller):
+#     """Starting page."""
+#     # make sure it's a player not a generic character
+#     if not caller.new_char.is_typeclass("typeclasses.characters.Character"):
+#         # it's not - swap it
+#         caller.new_char.swap_typeclass("typeclasses.characters.Character")
 
-    return (text, help), options
+#     text = dedent(
+#         """\
+#         |wWelcome to the game!|n
 
+#         During the character creation process, you can go forwards and back between steps,
+#         as well as quit and resume later. Feel free to take your time!
+#     """
+#     )
+#     options = {"desc": "Let's begin!", "goto": "menunode_points_base"}
+#     return text, options
 
-def node_apply_race(caller, raw_string, **kwargs):
-    race = kwargs.get('race')
-    tmp_character = kwargs["tmp_character"]
-    tmp_character.swap_race(race)
-    caller.msg('Swapped race!')
-
-    return node_chargen(caller, '', tmp_character=tmp_character)

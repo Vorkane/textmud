@@ -29,7 +29,7 @@ urlpatterns = [
     # path("mypath/", include("path.to.my.urls.file")),
      # make all chargen endpoints available under /chargen url
     path("chargen/", include("web.chargen.urls")),
-    path("character/", include('web.character.urls')),
+    path("char/", include('web.character.urls')),
 
 ]
 
