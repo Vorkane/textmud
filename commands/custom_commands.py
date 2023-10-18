@@ -1,4 +1,4 @@
-from evennia import default_cmds
+from evennia import default_cmds, CmdSet
 from evennia.commands.command import Command
 from commands.base import DanMachiCommand
 from evennia.utils.evform import EvForm
@@ -10,6 +10,19 @@ from typeclasses.characters import armor_slots
 from typeclasses.characters import clothing_slots
 
 import math
+
+from world.commands.mining import CmdMine
+
+
+class CmdSetBlackSmithA(CmdSet):
+    priority = 1
+    def at_cmdset_creation(self):
+        self.add(CmdMine())
+
+class CmdSetBlackSmithR(CmdSet):
+    priority = 1
+    def at_cmdset_creation(self):
+        self.remove(CmdMine())
 
 class CmdSheet(DanMachiCommand):
 

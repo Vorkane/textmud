@@ -3,6 +3,9 @@ from world.items.items import Equippable
 from typeclasses.objects import Object
 from world.commands.mining import CmdMine
 
+from commands.custom_commands import CmdSetBlackSmithA
+from commands.custom_commands import CmdSetBlackSmithR
+
 class CraftingTool(Equippable):
     """
     Typeclass for Ore Objects.
@@ -48,9 +51,7 @@ class PickAxe(CraftingTool):
         self.db.handedness = self.handedness
         
     def at_equip(self, character):
-        #self.add(CmdMine())
         pass
 
     def at_remove(self, character):
-        #self.delete(CmdMine())
         pass

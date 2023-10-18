@@ -117,7 +117,6 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdMine())
 
 
-
 class AccountCmdSet(default_cmds.AccountCmdSet):
     """
     This is the cmdset available to the Account at all times. It is

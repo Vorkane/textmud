@@ -200,7 +200,6 @@ class Character(ContribRPCharacter):
 
         self.stats.STR.carry_factor = 10
         self.stats.STR.lift_factor = 20
-        self.stats.ENC.current = 0
         self.stats.ENC.max = self.stats.STR.lift_factor * self.stats.STR
 
 
@@ -233,7 +232,7 @@ class Character(ContribRPCharacter):
         if not obj.db.weight:
             return
         else:
-            self.traits.ENC.current += obj.db.weight
+            self.stats.ENC.current += obj.db.weight
             #self.traits.EP.mod = \
             #    int(-(self.traits.ENC.actual // (2 * self.traits.STR.actual)))
 
@@ -241,7 +240,7 @@ class Character(ContribRPCharacter):
         if not obj.db.weight:
             return
         else:
-            self.traits.ENC.current -= obj.db.weight
+            self.stats.ENC.current -= obj.db.weight
             #self.traits.EP.mod = \
             #    int(+(self.traits.ENC.actual // (2 * self.traits.STR.actual)))
 
