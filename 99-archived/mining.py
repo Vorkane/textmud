@@ -3,7 +3,8 @@ from evennia.utils import delay
 
 class CmdMine(Command):
     key = "mine"
-    help_category = "Mining"
+    help_category = "Gathering"
+
 
     def func(self):
         caller = self.caller
@@ -22,8 +23,17 @@ class CmdMine(Command):
         if ore_node.ndb.mined:
             caller.msg("This ore node has already been mined and will respawn soon.")
             return
+               
 
-        # Mining process (you can customize this based on your game mechanics)
+        caller.db.is_immobile = caller
+        caller.msg("|222[Action time: 3 seconds]|n")
+
+        yield 3
+        
+        caller.msg("|222[Action time: 0 seconds]|n")
+        caller.db.is_immobile = None
+
+         # Mining process (you can customize this based on your game mechanics)
         ore_type = ore_node.db.ore_type
         mined_ore_amount = 1  # Change this to the amount of ore the player receives per mining action
 
@@ -61,6 +71,7 @@ class CmdMine(Command):
 
         # Mark the ore node as mined and schedule its respawn
         ore_node.ndb.mined = True
+        
         delay(ore_node.db.respawn_time, self.reset_mine_status, ore_node)
 
     def reset_mine_status(self, ore_node):

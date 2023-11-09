@@ -46,12 +46,12 @@ class Room(ContribRPRoom):
 
     appearance_template = (
         '{header}'
-        f"{'=== '}{'|502{name}|n'}\n\n"
-        '{desc}\n\n'
-        '{things}\n'
+        f"{'|510[ |n'}{'|530{name}|n |510]|n'}\n\n"
+        '{desc}\n\n'        
         '\n'
-        f"{'=== '}{'|502Exits|n '}\n"
-        '{exits}\n\n'
+        f"{'|510[ |n'}{'|530Exits|n |510]|n'}\n"
+        '{exits}\n'
+        '{things}\n'
         '{characters}\n'        
         '{footer}'
         '\n\n'
@@ -65,7 +65,7 @@ class Room(ContribRPRoom):
     # {footer}
     # """
 
-    pass
+    #pass
 
 """
 Room

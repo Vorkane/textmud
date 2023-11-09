@@ -1,10 +1,8 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 from world.items.items import Equippable
 from typeclasses.objects import Object
-from world.commands.mining import CmdMine
+from world.commands.professions.blacksmithing import MineCmdSet
 
-from commands.custom_commands import CmdSetBlackSmithA
-from commands.custom_commands import CmdSetBlackSmithR
 
 class CraftingTool(Equippable):
     """
@@ -20,7 +18,6 @@ class CraftingTool(Equippable):
     handedness = 1
     value = 0
     weight = 0.0
-    material = ""
 
     def at_object_creation(self):
         super(CraftingTool, self).at_object_creation()
@@ -51,7 +48,9 @@ class PickAxe(CraftingTool):
         self.db.handedness = self.handedness
         
     def at_equip(self, character):
-        pass
+        self.cmdset.add(MineCmdSet)   
+        character.db.tool_tier = self.db.tier
 
     def at_remove(self, character):
-        pass
+        self.cmdset.remove(MineCmdSet)
+        character.db.tool_tier = 0

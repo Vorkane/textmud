@@ -88,6 +88,9 @@ class Character(ContribRPCharacter):
         if self.db.is_sitting:
             self.msg("You need to stand up first.")
             return False
+        elif self.db.is_immobile:
+            self.msg("You are immobile.")
+            return False
         return True
     
     def announce_move_from(self, destination, msg=None, mapping=None):
@@ -192,6 +195,7 @@ class Character(ContribRPCharacter):
         self.db.title = ""
         self.db.race = "Human"
         self.db.permadeath = False
+        self.db.tool_tier = 0
         self.db.wallet = {'PP': 0, 'GP': 0, 'SP': 0, 'CP': 0}
 
         for key, kwargs in stats.items():
@@ -221,14 +225,14 @@ class Character(ContribRPCharacter):
                    "\t %s arrives in Orario.|/" \
                    "[*****************************************]|/" % self.key
         SESSIONS.announce_all(loginmsg)
-        tickerhandler.add(interval=randint(10, 15), callback=self.at_regen, persistent=True)
+        #tickerhandler.add(interval=randint(10, 15), callback=self.at_regen, persistent=True)
         self.execute_cmd("look")
 
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('character:sheet', kwargs={'object_id':self.id})
     
-    def at_object_receive(self, obj, source):
+    def at_object_receive(self, obj, source, **kwargs):
         if not obj.db.weight:
             return
         else:
@@ -236,7 +240,7 @@ class Character(ContribRPCharacter):
             #self.traits.EP.mod = \
             #    int(-(self.traits.ENC.actual // (2 * self.traits.STR.actual)))
 
-    def at_object_leave(self, obj, source):
+    def at_object_leave(self, obj, source, **kwargs):
         if not obj.db.weight:
             return
         else:
@@ -271,10 +275,10 @@ class Character(ContribRPCharacter):
         """Handler for equipped items."""
         return EquipHandler(self)
 
-    def at_regen(self):
-        self.traits.HP.current += int(floor(0.1 * self.traits.HP.max))
-        self.traits.MP.current += int(floor(0.1 * self.traits.MP.max))
-        self.traits.ST.current += int(floor(0.1 * self.traits.ST.max))
+    # def at_regen(self):
+    #     self.stats.HP.current += int(floor(0.1 * self.stats.HP.max))
+    #     self.stats.MP.current += int(floor(0.1 * self.stats.MP.max))
+    #     self.stats.ST.current += int(floor(0.1 * self.stats.ST.max))
 
 
     # these are the ability bonuses. Defense is always 10 higher

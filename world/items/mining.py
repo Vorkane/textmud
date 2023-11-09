@@ -1,7 +1,61 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 from typeclasses.objects import Object
+from random import randint
+from evennia.prototypes import spawner, prototypes
+from world.commands.professions.blacksmithing import MineCmdSet
 
-class OreNode(Object):
+class OreGatherNode(ContribRPObject):
+    """
+    An object which, when mined, allows players to gather a material resource.
+    """
+    is_mineable = True
+    req_material = ""
+
+    def at_object_creation(self):
+        self.locks.add("get:false()")
+        self.db.is_mineable = self.is_mineable
+        self.db.req_material = self.req_material
+        #self.cmdset.add(MineCmdSet)
+
+    def get_display_footer(self, looker, **kwargs):
+        return "You can |wgather|n from this."
+    
+    def at_gather(self, chara, **kwargs):
+        """
+        Creates the actual material object for the player to collect.
+        """
+        if not (proto_key := self.db.spawn_proto):
+            # Somehow this node has not material to spawn
+            chara.msg(f"The {self.get_display_name(chara)} disappears in a puff of confusion.")
+            # Get rid of ourself, since we're broken
+            self.delete()
+            return
+        
+        if not (remaining := self.db.gathers):
+            # This node has been used up
+            chara.msg(f"There is nothing left.")
+            # Get rid of ourself, since we're empty
+            self.delete()
+            return
+        
+        # Grab randomized amount to spawn
+        amt = randint(1, min(remaining, 3))
+
+        # Spawn the items!
+        objs = spawner.spawn(*[proto_key] * amt)
+        for obj in objs:
+            # Move to the gathering character
+            obj.location = chara
+        
+        if amt == remaining:
+            chara.msg(f"You collect the last {obj.get_numbered_name(amt, chara)[1]}.")
+            self.delete()
+        else:
+            chara.msg(f"You collect {obj.get_numbered_name(amt, chara)[1]}.")
+            self.db.gathers -= amt
+
+
+class OreNode(ContribRPObject):
     """
     Typeclass for Ore Node Objects.
     Attributes:

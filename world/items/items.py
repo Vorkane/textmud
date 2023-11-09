@@ -1,6 +1,7 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+from evennia.objects.objects import DefaultObject
 
-class Item(ContribRPObject):
+class Item(DefaultObject):
     """
     Typeclass for Items.
     Attributes:
@@ -24,6 +25,7 @@ class Item(ContribRPObject):
                                  "equip:false()",
                                  "get:true()"
                                  )))
+        #self.db.itemid = self.itemid
         self.db.value = self.value
         self.db.weight = float(self.weight)
         self.db.hardness = self.hardness

@@ -32,7 +32,6 @@ from functools import wraps
 #from .ooc.chargen import ChargenWelcomeCmdset
 
 # World Custom
-from world.commands.mining import CmdMine
 from world.commands.character.drink import CmdFill
 from world.commands.character.equip import CmdWield
 from world.commands.character.equip import CmdEquip

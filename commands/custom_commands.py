@@ -11,19 +11,6 @@ from typeclasses.characters import clothing_slots
 
 import math
 
-from world.commands.mining import CmdMine
-
-
-class CmdSetBlackSmithA(CmdSet):
-    priority = 1
-    def at_cmdset_creation(self):
-        self.add(CmdMine())
-
-class CmdSetBlackSmithR(CmdSet):
-    priority = 1
-    def at_cmdset_creation(self):
-        self.remove(CmdMine())
-
 class CmdSheet(DanMachiCommand):
 
     key = "sheet"
@@ -148,7 +135,8 @@ class CmdInventoryExtended(Command):
 Wielding: {wielding}
   Armors: {armor}
 Clothing: {clothing}
-Carrying: {carrying}
+Carrying: 
+      {carrying}
 
 |015=================================|n""".format(
             current_weight="".join(str([caller.stats.ENC.current])),
@@ -326,6 +314,7 @@ class CmdExtendedDrop(default_cmds.CmdDrop, DanMachiCommand):
 
     Usage:
       drop <obj>
+      droppity drop
 
     Lets you drop an object from your inventory into the
     location you are currently in.
@@ -361,7 +350,6 @@ class CmdExtendedDrop(default_cmds.CmdDrop, DanMachiCommand):
             obj = result[0]
 
         obj.move_to(caller.location, quiet=True)
-        caller.msg(caller.location)
         caller.msg("You drop %s." % (obj.name,))
         caller.location.msg_contents("%s drops %s." %
                                      (caller.name, obj.name),

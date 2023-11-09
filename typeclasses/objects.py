@@ -25,7 +25,7 @@ class ObjectParent:
     """
 
 
-class Object(ContribRPObject):
+class Object(DefaultObject):
     """
     This is the root typeclass object, implementing an in-game Evennia
     game object, such as having a location, being able to be
@@ -186,5 +186,3 @@ class Object(ContribRPObject):
         # empty string
         modifiers = " ".join(self.db.modifiers or [])
         return("{color}{name}|n{modifiers}".format(color=color, name=name, modifiers=modifiers))
-
-    pass
