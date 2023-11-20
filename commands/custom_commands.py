@@ -295,7 +295,7 @@ class CmdExtendedGet(default_cmds.CmdGet):
                                       obj.name),
                                      exclude=caller)
         # calling hook method
-        # obj.at_get(caller)
+        obj.at_get(caller)
 
     def at_post_cmd(self):
         """

@@ -51,7 +51,7 @@ class CmdMine(Command):
 
             caller.db.is_immobile = caller
             caller.msg("|222[Action time: 3 seconds]|n")
-            yield 3
+            #yield 3
             ore_node.at_gather(self.caller)
             caller.msg("|222[Action time: 0 seconds]|n")
             caller.db.is_immobile = None
