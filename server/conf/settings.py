@@ -43,14 +43,12 @@ AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
 AUTO_PUPPET_ON_LOGIN = False
 MAX_NR_CHARACTERS = 5
 DEBUG = False
-#COMMAND_DEFAULT_CLASS = "commands.command.Command"
+# COMMAND_DEFAULT_CLASS = "commands.command.Command"
 
-INSTALLED_APPS += ('web.chargen',
-                   'web.character',
-)
+# INSTALLED_APPS += ('web.chargen', 'web.character', )
 
 
-#CHARGEN_MENU = "world.chargen_menu"
+# CHARGEN_MENU = "world.chargen_menu"
 
 
 DATABASES = {
@@ -69,18 +67,13 @@ DATABASES = {
 ######################################################################
 
 # make contrib prototypes available as parents for map nodes
-PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes', 
-                      'world.items.prototypes_gathering',
-                      'world.items.prototypes_crafting',
-                      'world.items.prototypes_tools']
+PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes', 'world.items.prototypes_gathering', 'world.items.prototypes_crafting', 'world.items.prototypes_tools']
 
 # add launcher command
 EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand'
 
 # add game-specific maps
-XYZGRID_MAP_LIST = [
-    'world.maps.orario',
-    ]
+XYZGRID_MAP_LIST = ['world.maps.orario',]
 
 
 ######################################################################

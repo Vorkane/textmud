@@ -7,31 +7,32 @@ is setup to be the "default" character type created by the default
 creation commands.
 
 """
-#from evennia.objects.objects import DefaultCharacter
+# from evennia.objects.objects import DefaultCharacter
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter
-from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
-from evennia.utils.evform import EvForm
-from evennia.utils.evtable import EvTable
-from evennia.utils.logger import log_trace
+# from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
+from evennia.typeclasses.attributes import AttributeProperty
+# from evennia.utils.evform import EvForm
+# from evennia.utils.evtable import EvTable
+# from evennia.utils.logger import log_trace
 from evennia.utils.utils import lazy_property
 from evennia.contrib.rpg.traits import TraitHandler
 
 
-from world.characters.classes import CharacterClasses
+# from world.characters.classes import CharacterClasses
 
-from evennia.contrib.rpg.health_bar import display_meter
-from math import floor
-from evennia import TICKER_HANDLER as tickerhandler
+# from evennia.contrib.rpg.health_bar import display_meter
+# from math import floor
+# from evennia import TICKER_HANDLER as tickerhandler
 from evennia.server.sessionhandler import SESSIONS
-from random import randint
+# from random import randint
 
 # Custom World Classes
-from world.characters.races import Races
-from world.characters.races import Races2
+# from world.characters.races import Races
+# from world.characters.races import Races2
 
 from world.equip import EquipHandler
 
-from .objects import ObjectParent
+# from .objects import ObjectParent
 
 stats = {
     # Primary
@@ -56,7 +57,12 @@ armor_slots = ['helm', 'neck', 'cloak', 'torso', 'belt', 'bracers', 'gloves', 'r
 clothing_slots = ['hat', 'accessory', 'overtop', 'bottom', 'belt2', 'accessory2', 'gloves2', 'accessory3', 'accessory4', 'shoes']
 
 
+skills = {
+    'BLACKSMITH': {'trait_type': 'static', 'base': 0, 'xp': 0, 'xptnl': 100, 'name': 'Blacksmithing'},
+}
 
+# self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
+# self.skills.add("Prowl", "Prowl Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
 
 
 class Character(ContribRPCharacter):
@@ -80,6 +86,20 @@ class Character(ContribRPCharacter):
 
     """
 
+    def get_display_desc(self, looker, **kwargs):
+        """
+        Get the 'desc' component of the object description. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The desc display string.
+        """
+        desc = self.db.desc
+
+        return desc
+
     def at_pre_move(self, destination, **kwargs):
         """
         Called by self.move_to when trying to move somewhere. If this returns
@@ -92,7 +112,7 @@ class Character(ContribRPCharacter):
             self.msg("You are immobile.")
             return False
         return True
-    
+
     def announce_move_from(self, destination, msg=None, mapping=None):
         """
         Called if the move is to be announced. This is
@@ -186,7 +206,7 @@ class Character(ContribRPCharacter):
         })
 
         destination.msg_contents(string, exclude=(self,), mapping=mapping)
-    
+
     def at_object_creation(self):
 
         super(Character, self).at_object_creation()
@@ -201,11 +221,12 @@ class Character(ContribRPCharacter):
         for key, kwargs in stats.items():
             self.stats.add(key, **kwargs)
 
+        for key, kwargs in skills.items():
+            self.skills.add(key, **kwargs)
 
         self.stats.STR.carry_factor = 10
         self.stats.STR.lift_factor = 20
         self.stats.ENC.max = self.stats.STR.lift_factor * self.stats.STR
-
 
         # self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
         # self.skills.add("Prowl", "Prowl Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
@@ -220,24 +241,24 @@ class Character(ContribRPCharacter):
         # self.proficiencies.add("throwing", "Throwing Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
 
     def at_post_puppet(self):
-        #self.location.msg_contents("%s has connected" % self.key)
+        # self.location.msg_contents("%s has connected" % self.key)
         loginmsg = "\n\n[************--Rumour Monger--************]|/" \
                    "\t %s arrives in Orario.|/" \
                    "[*****************************************]|/" % self.key
         SESSIONS.announce_all(loginmsg)
-        #tickerhandler.add(interval=randint(10, 15), callback=self.at_regen, persistent=True)
+        # tickerhandler.add(interval=randint(10, 15), callback=self.at_regen, persistent=True)
         self.execute_cmd("look")
 
     def get_absolute_url(self):
         from django.urls import reverse
-        return reverse('character:sheet', kwargs={'object_id':self.id})
-    
+        return reverse('character:sheet', kwargs={'object_id': self.id})
+
     def at_object_receive(self, obj, source, **kwargs):
         if not obj.db.weight:
             return
         else:
             self.stats.ENC.current += obj.db.weight
-            #self.traits.EP.mod = \
+            # self.traits.EP.mod = \
             #    int(-(self.traits.ENC.actual // (2 * self.traits.STR.actual)))
 
     def at_object_leave(self, obj, source, **kwargs):
@@ -245,7 +266,7 @@ class Character(ContribRPCharacter):
             return
         else:
             self.stats.ENC.current -= obj.db.weight
-            #self.traits.EP.mod = \
+            # self.traits.EP.mod = \
             #    int(+(self.traits.ENC.actual // (2 * self.traits.STR.actual)))
 
     @lazy_property
@@ -262,12 +283,12 @@ class Character(ContribRPCharacter):
     def skills(self):
         # this adds the handler as .skills
         return TraitHandler(self, db_attribute_key="skills")
-    
+
     @lazy_property
     def proficiencies(self):
         # this adds the handler as .skills
-        return TraitHandler(self, db_attribute_key="proficiencies")    
-    
+        return TraitHandler(self, db_attribute_key="proficiencies")
+
     is_pc = True
 
     @lazy_property
@@ -279,7 +300,6 @@ class Character(ContribRPCharacter):
     #     self.stats.HP.current += int(floor(0.1 * self.stats.HP.max))
     #     self.stats.MP.current += int(floor(0.1 * self.stats.MP.max))
     #     self.stats.ST.current += int(floor(0.1 * self.stats.ST.max))
-
 
     # these are the ability bonuses. Defense is always 10 higher
     # strength = AttributeProperty(default=1) #brawn
@@ -303,14 +323,13 @@ class Character(ContribRPCharacter):
     copper = AttributeProperty(default=0)
     iron = AttributeProperty(default=0)
 
-
     level = AttributeProperty(default=1)  # Just a bragging stat, for now.
     coins = AttributeProperty(default=0)  # copper coins
 
     totalxp = AttributeProperty(default=1)
     currentxp = AttributeProperty = 1
     pri_xp_tnl = AttributeProperty = 1000
-    
+
     # @lazy_property
     # def pri_class(self):
     #     pri_class = self.ndb.pri_class

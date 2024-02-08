@@ -1,27 +1,28 @@
 # From Evennia
 from evennia import CmdSet
-from evennia import Command, create_object
+from evennia import Command
 
 
 # World Custom
 
-
-
 ##########################################
-### Command Sets
+# Command Sets
 ##########################################
+
 
 class MineCmdSet(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdMine())
+
 
 class BlacksmithCmdSet(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdProspect())
 
 ##########################################
-### Command Classes
+#  Command Classes
 ##########################################
+
 
 class CmdMine(Command):
     """
@@ -29,7 +30,7 @@ class CmdMine(Command):
     """
 
     key = "mine"
-    aliases = ("collect","harvest")
+    aliases = ("collect", "harvest")
     help_category = "Gathering"
 
     def func(self):
@@ -38,13 +39,13 @@ class CmdMine(Command):
 
         mineable_nodes = [obj for obj in location.contents if obj.db.is_mineable]
         if not mineable_nodes:
-            caller.msg(f"There are |rno mineable|n mineral nodes here.")
+            caller.msg("There are |rno mineable|n mineral nodes here.")
             return
-        
+
         ore_node = mineable_nodes[0]
 
         if ore_node.db.min_tier > caller.db.tool_tier:
-            caller.msg(f"You don't have a strong enough tool.")
+            caller.msg("You don't have a strong enough tool.")
             return
 
         try:
@@ -55,7 +56,7 @@ class CmdMine(Command):
             ore_node.at_gather(self.caller)
             caller.msg("|222[Action time: 0 seconds]|n")
             caller.db.is_immobile = None
-            
+
         except AttributeError:
             self.msg("You cannot gather anything from that.")
 
@@ -81,13 +82,13 @@ class CmdMine(Command):
 #         if ore_node.ndb.mined:
 #             caller.msg("This ore node has already been mined and will respawn soon.")
 #             return
-               
+
 
 #         caller.db.is_immobile = caller
 #         caller.msg("|222[Action time: 3 seconds]|n")
 
 #         yield 3
-        
+
 #         caller.msg("|222[Action time: 0 seconds]|n")
 #         caller.db.is_immobile = None
 
@@ -129,7 +130,7 @@ class CmdMine(Command):
 
 #         # Mark the ore node as mined and schedule its respawn
 #         ore_node.ndb.mined = True
-        
+
 #         delay(ore_node.db.respawn_time, self.reset_mine_status, ore_node)
 
 #     def reset_mine_status(self, ore_node):
@@ -140,6 +141,6 @@ class CmdMine(Command):
 class CmdProspect(Command):
     key = "prospect"
     help_category = "Smithing"
-    
+
     def func(self):
         pass

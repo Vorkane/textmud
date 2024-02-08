@@ -1,0 +1,49 @@
+Number of Skills to start out with
+
+Weapon
+    Unarmed
+        Martial Arts
+        Brawling
+    Sword
+        One-Handed
+        Two-Handed
+        Dual Sword
+        Dagger
+        Katana
+    Whip
+    Staff
+    Club
+    Spear
+        Long Spear
+    Bow
+        Short Bow
+        Long Bow
+        Compound Bow
+        Crossbow
+    Axe
+    Hammer
+
+Equipment
+    Armor
+        Leather
+        Metal
+        Light
+        Heavy
+    Shield
+        Large
+
+Magic
+    Water
+    Fire
+    Air
+    Earth
+    Light
+    Darkness
+    Recovery
+    Enchant
+
+Utility
+    Stealth
+    Throw
+    Survival
+    Bargain

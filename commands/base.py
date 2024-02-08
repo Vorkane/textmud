@@ -1,7 +1,8 @@
-#from evennia.commands.default.muxcommand import MuxCommand, MuxAccountCommand
+# from evennia.commands.default.muxcommand import MuxCommand, MuxAccountCommand
 from evennia.commands.command import Command
 from evennia.contrib.rpg.health_bar import display_meter
-from evennia import utils
+# from evennia import utils
+
 
 class DanMachiCommand(Command):
     """Base command for Characters"""
@@ -11,8 +12,8 @@ class DanMachiCommand(Command):
         caller = self.caller
 
         health_bar = display_meter(caller.stats.HP.current, caller.stats.HP.max, length=15, align="center")
-        mana_bar = display_meter(caller.stats.MP.current, caller.stats.MP.max, length=15, align="center", fill_color=['R','O','B'])
-        self.msg(prompt = f"{health_bar} {mana_bar}\n\n")
+        mana_bar = display_meter(caller.stats.MP.current, caller.stats.MP.max, length=15, align="center", fill_color=['R', 'O', 'B'])
+        self.msg(prompt=f"{health_bar} {mana_bar}\n\n")
 
     # def parse(self):
     #     """
@@ -107,7 +108,7 @@ class DanMachiCommand(Command):
     #             self.character = self.caller.get_puppet(self.session)
     #         else:
     #             self.character = None
-        
+
 
 class DanMachiPlayerCommand(Command):
     """Base command for Players/Accounts"""

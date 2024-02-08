@@ -1,8 +1,9 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
-from typeclasses.objects import Object
+# from typeclasses.objects import Object
 from random import randint
-from evennia.prototypes import spawner, prototypes
-from world.commands.professions.blacksmithing import MineCmdSet
+from evennia.prototypes import spawner
+# from commands.skills.blacksmithing import MineCmdSet
+
 
 class OreGatherNode(ContribRPObject):
     """
@@ -15,11 +16,11 @@ class OreGatherNode(ContribRPObject):
         self.locks.add("get:false()")
         self.db.is_mineable = self.is_mineable
         self.db.req_material = self.req_material
-        #self.cmdset.add(MineCmdSet)
+        # self.cmdset.add(MineCmdSet)
 
     def get_display_footer(self, looker, **kwargs):
         return "You can |wgather|n from this."
-    
+
     def at_gather(self, chara, **kwargs):
         """
         Creates the actual material object for the player to collect.
@@ -30,14 +31,14 @@ class OreGatherNode(ContribRPObject):
             # Get rid of ourself, since we're broken
             self.delete()
             return
-        
+
         if not (remaining := self.db.gathers):
             # This node has been used up
-            chara.msg(f"There is nothing left.")
+            chara.msg("There is nothing left.")
             # Get rid of ourself, since we're empty
             self.delete()
             return
-        
+
         # Grab randomized amount to spawn
         amt = randint(1, min(remaining, 3))
 
@@ -46,12 +47,14 @@ class OreGatherNode(ContribRPObject):
         for obj in objs:
             # Move to the gathering character
             obj.location = chara
-        
+
         if amt == remaining:
             chara.msg(f"You collect the last {obj.get_numbered_name(amt, chara)[1]}.")
+            chara.skills.BLACKSMITH.xp += 0.1 * amt
             self.delete()
         else:
             chara.msg(f"You collect {obj.get_numbered_name(amt, chara)[1]}.")
+            chara.skills.BLACKSMITH.xp += 0.1 * amt
             self.db.gathers -= amt
 
 
@@ -73,6 +76,7 @@ class OreNode(ContribRPObject):
     respawn_time = 0
     is_mineable = True
 
+
 class Ore(ContribRPObject):
     """
     Typeclass for Ore Objects.
@@ -91,6 +95,7 @@ class Ore(ContribRPObject):
     weight = 0.0
     ore_type = ""
 
+
 class CopperOreNode(OreNode):
 
     def at_object_creation(self):
@@ -101,6 +106,7 @@ class CopperOreNode(OreNode):
         self.db.ore_type = "copper"
         self.db.respawn_time = 5
         self.db.is_mineable = True
+
 
 class IronOreNode(OreNode):
 
@@ -114,6 +120,7 @@ class IronOreNode(OreNode):
         self.db.respawn_time = 5
         self.db.is_mineable = True
 
+
 class CopperOre(Ore):
 
     def at_object_creation(self):
@@ -123,6 +130,7 @@ class CopperOre(Ore):
         self.db.desc = "A piece of copper ore."
         self.db.weight = 0.5
         self.db.ore_type = "copper"
+
 
 class IronOre(Ore):
 

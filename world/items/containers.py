@@ -1,8 +1,6 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 
 
-
-
 class Bag(ContribRPObject):
     """
     This class is for a container classified as a bag.
@@ -17,6 +15,7 @@ class Bag(ContribRPObject):
 
     pass
 
+
 class Chest(ContribRPObject):
     """
     This class is for a container classified as a chest.
@@ -28,6 +27,7 @@ class Chest(ContribRPObject):
     weight_reduction = 0
     item_limit = 5
     current_item = 0
+
 
 class Canteen(ContribRPObject):
     """
@@ -51,9 +51,9 @@ class Canteen(ContribRPObject):
         Args:
             canteen (Object): The object being filled.
         """
-        
+
         if self.db.fluid_type != fluid.fluid_type:
-            self.caller.msg(f"The liquid in your container is not the same.")
+            self.caller.msg("The liquid in your container is not the same.")
             return False
         return True
 
@@ -66,4 +66,3 @@ class Canteen(ContribRPObject):
             fluid.db.volume_current -= move_to_volume
             return True
         return False
-        

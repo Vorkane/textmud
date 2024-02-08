@@ -1,7 +1,7 @@
-from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+# from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 from world.items.items import Equippable
-from typeclasses.objects import Object
-from world.commands.professions.blacksmithing import MineCmdSet
+# from typeclasses.objects import Object
+from commands.skills.blacksmithing import MineCmdSet
 
 
 class CraftingTool(Equippable):
@@ -24,7 +24,7 @@ class CraftingTool(Equippable):
         self.db.value = self.value
         self.db.weight = float(self.weight)
         self.db.handedness = self.handedness
-    
+
     def at_equip(self, character):
         """character.traits.MAB.mod += self.db.damage"""
         pass
@@ -46,11 +46,14 @@ class PickAxe(CraftingTool):
         self.db.value = self.value
         self.db.weight = float(self.weight)
         self.db.handedness = self.handedness
-        
+        self.db.worn = False
+
     def at_equip(self, character):
-        self.cmdset.add(MineCmdSet)   
+        self.cmdset.add(MineCmdSet)
         character.db.tool_tier = self.db.tier
+        self.db.worn = True
 
     def at_remove(self, character):
         self.cmdset.remove(MineCmdSet)
         character.db.tool_tier = 0
+        self.db.worn = False

@@ -1,3 +1,4 @@
 apk add mariadb-connector-c-dev
 apk add mariadb-dev
 pip install mysqlclient
+apk add mysql-client

@@ -6,8 +6,10 @@ Commands describe the input the account can do to the game.
 """
 
 from evennia.commands.command import Command as BaseCommand
-from evennia import default_cmds
+# from evennia import default_cmds
 from evennia.contrib.rpg.health_bar import display_meter
+from evennia.utils import utils
+
 
 class Command(BaseCommand):
     """
@@ -23,9 +25,8 @@ class Command(BaseCommand):
         caller = self.caller
 
         health_bar = display_meter(caller.db.hp, caller.db.hp_max, length=15, align="center")
-        mana_bar = display_meter(caller.db.mana, caller.db.mana_max, length=15, align="center", fill_color=['R','O','B'])
-        self.msg(prompt = f"{health_bar} {mana_bar}\n\n")
-
+        mana_bar = display_meter(caller.db.mana, caller.db.mana_max, length=15, align="center", fill_color=['R', 'O', 'B'])
+        self.msg(prompt=f"{health_bar} {mana_bar}\n\n")
 
     # Each Command class implements the following methods, called in this order
     # (only func() is actually required):
@@ -38,8 +39,6 @@ class Command(BaseCommand):
     #         every command, like prompts.
     #
     pass
-
-from evennia.utils import utils
 
 
 class MuxCommand(Command):
@@ -194,7 +193,7 @@ class MuxCommand(Command):
 # from evennia.utils import utils
 #
 #
-#class MuxCommand(Command):
+# class MuxCommand(Command):
 #     """
 #     This sets up the basis for a MUX command. The idea
 #     is that most other Mux-related commands should just
