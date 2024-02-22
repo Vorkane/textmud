@@ -1,5 +1,7 @@
-from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+# from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 from evennia.objects.objects import DefaultObject
+from evennia.contrib.game_systems.containers import ContribContainer
+
 
 class Item(DefaultObject):
     """
@@ -18,32 +20,32 @@ class Item(DefaultObject):
     current = 0
     durability = 0
 
-
     def at_object_creation(self):
         super(Item, self).at_object_creation()
         self.locks.add(";".join(("puppet:perm(Wizards)",
                                  "equip:false()",
                                  "get:true()"
                                  )))
-        #self.db.itemid = self.itemid
+        # self.db.itemid = self.itemid
         self.db.value = self.value
         self.db.weight = float(self.weight)
         self.db.hardness = self.hardness
         self.db.durability = self.durability
         self.db.current = self.current
 
-    def return_appearance(self,looker):
+    def return_appearance(self, looker):
         if not looker:
             return
 
         looker.msg("%s|/" % self.db.desc)
-        #looker.msg("%s %s." % (self.key, item_dura(self)))
+        # looker.msg("%s %s." % (self.key, item_dura(self)))
 
     def at_get(self, getter):
         pass
 
     def at_drop(self, dropper):
         pass
+
 
 class Equippable(Item):
     """
@@ -84,3 +86,7 @@ class Equippable(Item):
         if self in dropper.equip:
             dropper.equip.remove(self)
             self.at_remove(dropper)
+
+
+class ObjContainer(ContribContainer):
+    pass

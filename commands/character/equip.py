@@ -3,8 +3,8 @@
 from evennia.utils.evtable import EvTable
 from commands.command import MuxCommand
 
-from world.items.crafting_tools import CraftingTool
-from world.items.crafting_tools import PickAxe
+from world.items.gear.crafting_tools import CraftingTool
+from world.items.gear.crafting_tools import PickAxe
 
 # __all__ = ('CmdEquip', 'CmdWear', 'CmdWield', 'CmdRemove')
 __all__ = ('CmdEquip', 'CmdInventory', 'CmdWield', 'CmdRemove')

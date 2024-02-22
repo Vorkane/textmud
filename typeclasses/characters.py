@@ -7,32 +7,15 @@ is setup to be the "default" character type created by the default
 creation commands.
 
 """
-# from evennia.objects.objects import DefaultCharacter
-from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter
-# from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
+from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
-# from evennia.utils.evform import EvForm
-# from evennia.utils.evtable import EvTable
-# from evennia.utils.logger import log_trace
 from evennia.utils.utils import lazy_property
 from evennia.contrib.rpg.traits import TraitHandler
-
-
-# from world.characters.classes import CharacterClasses
-
-# from evennia.contrib.rpg.health_bar import display_meter
-# from math import floor
-# from evennia import TICKER_HANDLER as tickerhandler
 from evennia.server.sessionhandler import SESSIONS
-# from random import randint
 
-# Custom World Classes
-# from world.characters.races import Races
-# from world.characters.races import Races2
 
 from world.equip import EquipHandler
 
-# from .objects import ObjectParent
 
 stats = {
     # Primary
@@ -47,7 +30,7 @@ stats = {
     'MP': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Mana'},
     'ST': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Stamina'},
     # Misc
-    'ENC': {'trait_type': 'counter', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Carry Weight'},
+    'ENC': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Carry Weight'},
     'LV': {'trait_type': 'static', 'base': 1, 'mod': 0, 'name': 'Level'},
     'XP': {'trait_type': 'counter', 'base': 0, 'mod': 0, 'name': 'Experience', 'extra': {'level_boundaries': (500, 2000, 4500, 'unlimited')}},
 }
@@ -65,7 +48,7 @@ skills = {
 # self.skills.add("Prowl", "Prowl Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
 
 
-class Character(ContribRPCharacter):
+class Character(DefaultCharacter):
     """
     The Character defaults to reimplementing some of base Object's hook methods with the
     following functionality:
@@ -113,7 +96,7 @@ class Character(ContribRPCharacter):
             return False
         return True
 
-    def announce_move_from(self, destination, msg=None, mapping=None):
+    def announce_move_from(self, destination, msg=None, mapping=None, **kwargs):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -154,7 +137,7 @@ class Character(ContribRPCharacter):
 
         location.msg_contents(string, exclude=(self,), mapping=mapping)
 
-    def announce_move_to(self, source_location, msg=None, mapping=None):
+    def announce_move_to(self, source_location, msg=None, mapping=None, **kwargs):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -286,8 +269,13 @@ class Character(ContribRPCharacter):
 
     @lazy_property
     def proficiencies(self):
-        # this adds the handler as .skills
+        # This adds the handler as .proficiencies
         return TraitHandler(self, db_attribute_key="proficiencies")
+
+    @lazy_property
+    def reputation(self):
+        # This add the handler for .reputation
+        return TraitHandler(self, db_attribute_key="reputation")
 
     is_pc = True
 
@@ -301,51 +289,4 @@ class Character(ContribRPCharacter):
     #     self.stats.MP.current += int(floor(0.1 * self.stats.MP.max))
     #     self.stats.ST.current += int(floor(0.1 * self.stats.ST.max))
 
-    # these are the ability bonuses. Defense is always 10 higher
-    # strength = AttributeProperty(default=1) #brawn
-    # endurance = AttributeProperty(default=1)
-    # dexterity = AttributeProperty(default=1) #deftness or nimbleness
-    # agility = AttributeProperty(default=1) #vitality
-    # magic = AttributeProperty(default=1) #brilliance
-    # luck = AttributeProperty(default=1) #insight
-
-    # cclass_key =  AttributeProperty()
     race = AttributeProperty()
-
-    hp = AttributeProperty(default=4)
-    hp_max = AttributeProperty(default=4)
-    mana = AttributeProperty(default=4)
-    mana_max = AttributeProperty(default=4)
-    stamina = AttributeProperty(default=2)
-    stamina_max = AttributeProperty(default=4)
-
-    # Resources
-    copper = AttributeProperty(default=0)
-    iron = AttributeProperty(default=0)
-
-    level = AttributeProperty(default=1)  # Just a bragging stat, for now.
-    coins = AttributeProperty(default=0)  # copper coins
-
-    totalxp = AttributeProperty(default=1)
-    currentxp = AttributeProperty = 1
-    pri_xp_tnl = AttributeProperty = 1000
-
-    # @lazy_property
-    # def pri_class(self):
-    #     pri_class = self.ndb.pri_class
-    #     if pri_class is None:
-    #         pri_class = CharacterClasses.get(self.db.pri_class_key)
-    #         self.ndb.pri_class = pri_class
-
-    #     return pri_class
-
-    # @lazy_property
-    # def race(self):
-    #     race = self.ndb.race
-    #     if race is None:
-    #         race = Races.get(self.db.race)
-    #         self.ndb.race = race
-
-    #     return race
-
-    # pass

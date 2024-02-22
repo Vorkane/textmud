@@ -1,5 +1,6 @@
 from evennia.contrib.grid.xyzgrid import xymap_legend
 
+
 # Roads
 class Intersection(xymap_legend.MapNode):
     display_symbol = "#"
@@ -9,6 +10,7 @@ class Intersection(xymap_legend.MapNode):
             "desc": "An intersection of Riverport roads."
         }
 
+
 class RoadNode(xymap_legend.MapNode):
     display_symbol = "#"
     prototype = {
@@ -16,6 +18,7 @@ class RoadNode(xymap_legend.MapNode):
             "key": "A road",
             "desc": "A road through Riverport."
         }
+
 
 class GateNode(xymap_legend.MapNode):
     # Note: these nodes will need to be manually connected to the overworld
@@ -27,6 +30,7 @@ class GateNode(xymap_legend.MapNode):
             "tags": [('area_exit', 'area_def')],
         }
 
+
 class HouseNode(xymap_legend.MapNode):
     display_symbol = "∆"
     prototype = {
@@ -35,6 +39,7 @@ class HouseNode(xymap_legend.MapNode):
             "desc": "A building inside Riverport."
         }
 
+
 class BridgeNode(xymap_legend.MapNode):
     display_symbol = "Ξ"
     prototype = {
@@ -42,6 +47,7 @@ class BridgeNode(xymap_legend.MapNode):
             "key": "A bridge",
             "desc": "A bridge over the river."
         }
+
 
 class BridgeLink(xymap_legend.MapLink):
     symbol = "Ξ"

@@ -7,12 +7,12 @@ from evennia.utils.evmenu import EvMenu
 from evennia.utils import dedent
 
 from typeclasses.characters import Character
-from world.characters.races import Races
+# from world.characters.races import Races
 
 from .rules import dice
 
 from world.characters.races import _SORTED_ALL_RACES
-from typeclasses.characters import Character
+# from typeclasses.characters import Character
 
 import world.characters.races
 
@@ -28,7 +28,7 @@ _ABILITIES = {
 
 _TEMP_SHEET = """
 |wName:|n {name}
-|wRace:|n {race} 
+|wRace:|n {race}
 
 |wHP:|n {hp} / {hp_max}
 
@@ -44,6 +44,7 @@ _TEMP_SHEET = """
 |w============================|n
 
 """
+
 
 class TemporaryCharacterSheet:
     """
@@ -76,7 +77,7 @@ class TemporaryCharacterSheet:
         self.dexterity = 5
         self.agility = 5
         self.magic = 5
-        self.luck = 5        
+        self.luck = 5
 
         self.hp_max = max(18, dice.roll("1d30"))
         self.hp = self.hp_max
@@ -85,7 +86,7 @@ class TemporaryCharacterSheet:
 
         _race = new_race
 
-        #get_race_class = getattr(world.characters.races, _race)
+        # get_race_class = getattr(world.characters.races, _race)
 
         self.race_type = _race
         self.cl_race = _race
@@ -111,7 +112,7 @@ class TemporaryCharacterSheet:
             dexterity=self.dexterity,
             agility=self.agility,
             magic=self.magic,
-            luck=self.luck,            
+            luck=self.luck,
             hp=self.hp,
             hp_max=self.hp_max,
         )
@@ -123,9 +124,9 @@ class TemporaryCharacterSheet:
         """
         grid = get_xyzgrid()
         start_location = grid.get_room(('12', '7', 'orario'))
-        #start_location = "#39"
+        # start_location = "#39"
         if start_location:
-            start_location = start_location[0] # The room we got above is a queryset so we get it by index
+            start_location = start_location[0]  # The room we got above is a queryset so we get it by index
         else:
             start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
 
@@ -161,7 +162,7 @@ class TemporaryCharacterSheet:
 
         new_character.stats.ST.max = int(10 + new_character.stats.END.base * 0.5)
         new_character.stats.ST.current = int(new_character.stats.ST.max)
-        
+
         new_character.locks.add(
             "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
             " perm(Admin)" % (new_character.id, account.id, account.id)
@@ -208,7 +209,7 @@ class TemporaryCharacterSheet:
 
 
 ##########################################################
-# 
+#
 # chargen menu section
 #
 ##########################################################
@@ -218,17 +219,17 @@ class TemporaryCharacterSheet:
 ##########################################################
 
 def start_chargen(caller, session=None):
-    #node_initial_name()
+    # node_initial_name()
 
     menutree = {
-         "menunode_welcome": menunode_welcome,
-         "menunode_rules": menunode_rules,
-         "menunode_name": menunode_name,
-         "menunode_base": menunode_base,
-         "menunode_show_race": menunode_show_race,
-         "menunode_select_race": menunode_select_race,
-         "menunode_apply_race": menunode_apply_race,
-         "menunode_apply": menunode_apply
+        "menunode_welcome": menunode_welcome,
+        "menunode_rules": menunode_rules,
+        "menunode_name": menunode_name,
+        "menunode_base": menunode_base,
+        "menunode_show_race": menunode_show_race,
+        "menunode_select_race": menunode_select_race,
+        "menunode_apply_race": menunode_apply_race,
+        "menunode_apply": menunode_apply
     }
 
     tmp_character = TemporaryCharacterSheet()
@@ -239,11 +240,12 @@ def start_chargen(caller, session=None):
 #               Welcome page
 ##########################################################
 
+
 def menunode_welcome(caller, **kwargs):
 
     caller.msg("\n" * settings.CLIENT_DEFAULT_HEIGHT)
 
-    tmp_character = kwargs["tmp_character"]
+    # tmp_character = kwargs["tmp_character"]
 
     """ Starting Page. """
     text = dedent(
@@ -252,7 +254,7 @@ def menunode_welcome(caller, **kwargs):
 
         This is the starting node for all brand new characters. It's a good place to
         remind players that they can exit the character creator and resume later,
-        especially if you're going to have a really long chargen process.     
+        especially if you're going to have a really long chargen process.
     """
     )
 
@@ -261,7 +263,6 @@ def menunode_welcome(caller, **kwargs):
 
     return (text, help), options
 
-    
 
 ##########################################################
 #               Rules
@@ -271,11 +272,11 @@ def menunode_rules(caller, **kwargs):
 
     caller.msg("\n" * settings.CLIENT_DEFAULT_HEIGHT)
 
-    tmp_character = kwargs["tmp_character"]
+    # tmp_character = kwargs["tmp_character"]
 
     text = dedent(
         """\
-           Have you read the rules and agree to abide by them? 
+           Have you read the rules and agree to abide by them?
     """
     )
     options = [
@@ -289,22 +290,23 @@ def menunode_rules(caller, **kwargs):
 #               Change your Name
 ##########################################################
 
+
 def menunode_name(caller, raw_string, **kwargs):
 
-    caller.msg("\n" * settings.CLIENT_DEFAULT_HEIGHT)    
+    caller.msg("\n" * settings.CLIENT_DEFAULT_HEIGHT)
 
     tmp_character = kwargs["tmp_character"]
 
     if tmp_character.name:
         text = (
             f"You are already name |g{tmp_character.name}|n.\n"
-             "What would you like your new name to be named?\n"
-             "Enter name or leave empty to abort."
+            "What would you like your new name to be named?\n"
+            "Enter name or leave empty to abort."
         )
     else:
         text = (
-            f"What would you like to be named?\n"
-             "Enter name or leave empty to abort."
+            "What would you like to be named?\n"
+            "Enter name or leave empty to abort."
         )
 
     options = {
@@ -312,6 +314,7 @@ def menunode_name(caller, raw_string, **kwargs):
         "goto": (_update_name, kwargs)
     }
     return text, options
+
 
 def _update_name(caller, raw_string, **kwargs):
 
@@ -336,6 +339,7 @@ def _update_name(caller, raw_string, **kwargs):
     # ]
     return "menunode_base", kwargs
 
+
 def menunode_base(caller, raw_string, **kwargs):
 
     tmp_character = kwargs["tmp_character"]
@@ -350,17 +354,18 @@ def menunode_base(caller, raw_string, **kwargs):
 
     return text, options
 
+
 def menunode_show_race(caller, raw_string, **kwargs):
-    
+
     text = """\
         Select a |cRace|n.
 
         Select one by number below to view its details, or |whelp|n
-        at any time for info.        
+        at any time for info.
     """
-    
+
     options = []
-    
+
     for race in _SORTED_ALL_RACES:
         options.append({
             "desc": "|c{}|n".format(race),
@@ -369,23 +374,25 @@ def menunode_show_race(caller, raw_string, **kwargs):
         })
     return (text, "Select a race to show it's details"), options
 
+
 def menunode_select_race(caller, raw_string, **kwargs):
     try:
         choice = int(raw_string.strip())
-        _race = _SORTED_ALL_RACES[choice -1]
+        _race = _SORTED_ALL_RACES[choice - 1]
     except (ValueError, KeyError, IndexError):
         caller.msg("|rInvalid choice. Try again.")
         return None
-    
+
     get_race_class = getattr(world.characters.races, _race)
 
     text = get_race_class.desc + "\nWould you like to become this race?"
     options = (
-        {"key": ("Yes", "y"), "desc": f"Become {get_race_class.name}", "goto": ("menunode_apply_race", {'race': get_race_class, **kwargs}),},
+        {"key": ("Yes", "y"), "desc": f"Become {get_race_class.name}", "goto": ("menunode_apply_race", {'race': get_race_class, **kwargs}), },
         {"key": ("No", "n", "_default"), "desc": "Return to main menu", "goto": "menunode_show_race"}
     )
 
     return text, options
+
 
 def menunode_apply_race(caller, raw_string, **kwargs):
     race = kwargs.get('race')
@@ -396,17 +403,13 @@ def menunode_apply_race(caller, raw_string, **kwargs):
 
     return menunode_base(caller, '', tmp_character=tmp_character)
 
+
 def menunode_apply(caller, raw_string, **kwargs):
     """
     End chargen and create the character. We will also puppet it.
 
     """
     tmp_character = kwargs["tmp_character"]
-
-    #pri_class = _SORTED_CLASSES[0]
-
-    #caller.msg({pri_class})
-    #tmp_character.pri_class = pri_class
 
     new_character = tmp_character.apply(caller)
     caller.db._playable_characters.append(new_character)
@@ -438,10 +441,6 @@ def menunode_apply(caller, raw_string, **kwargs):
 
 #     return text, options
 
-
-
-
-
 # def menunode_welcome(caller):
 #     """Starting page."""
 #     # make sure it's a player not a generic character
@@ -459,4 +458,3 @@ def menunode_apply(caller, raw_string, **kwargs):
 #     )
 #     options = {"desc": "Let's begin!", "goto": "menunode_points_base"}
 #     return text, options
-

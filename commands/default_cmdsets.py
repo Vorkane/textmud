@@ -21,11 +21,8 @@ from commands import sittables
 
 
 # Evennia Contribs
-# from evennia.contrib.rpg.character_creator.character_creator import ContribCmdCharCreate
 from evennia.contrib.base_systems.building_menu import GenericBuildingCmd
-# from evennia.contrib.game_systems.containers import ContainerCmdSet
 from evennia.contrib.game_systems.containers import containers
-# from evennia.contrib.grid import extended_room
 
 from functools import wraps
 
@@ -36,7 +33,9 @@ from commands.character.drink import CmdFill
 from commands.character.equip import CmdWield
 from commands.character.equip import CmdEquip
 from commands.character.equip import CmdRemove
+from commands.ooc.wiki import CmdWiki
 from .building.building import EditCmd
+from evennia.contrib.grid.xyzgrid.commands import XYZGridCmdSet
 
 
 def check_errors(func):
@@ -90,6 +89,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(sittables.CmdSit2)
         self.add(sittables.CmdStand2)
         self.add(CmdFill())
+        self.add(CmdWiki())
         # self.add(ContainerCmdSet)
 
         #
@@ -103,12 +103,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(custom_commands.CmdExtendedLook())
         self.add(custom_commands.CmdExtendedGet())
         self.add(custom_commands.CmdExtendedDrop())
-        # self.add(containers.CmdContainerGet)
+        self.add(XYZGridCmdSet)
         self.add(containers.CmdPut)
-        # self.add(custom_commands.CmdLook())
-        # self.add(custom_commands.CmdLook123())
-        # self.add(extended_room.ExtendedRoomCmdSet)
-        # self.add(custom_commands.CmdLook234())
 
     # def add_blacksmith_standard_cmdsets(self):
     #     self.add(commands.character.CmdMine())

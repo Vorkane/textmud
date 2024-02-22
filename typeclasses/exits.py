@@ -17,13 +17,13 @@ class Exit(ObjectParent, DefaultExit):
     they defines the `destination` property. It also does work in the
     following methods:
 
-     basetype_setup() - sets default exit locks (to change, use `at_object_creation` instead).
-     at_cmdset_get(**kwargs) - this is called when the cmdset is accessed and should
-                              rebuild the Exit cmdset along with a command matching the name
-                              of the Exit object. Conventionally, a kwarg `force_init`
-                              should force a rebuild of the cmdset, this is triggered
-                              by the `@alias` command when aliases are changed.
-     at_failed_traverse() - gives a default error message ("You cannot
+    basetype_setup() - sets default exit locks (to change, use `at_object_creation` instead).
+    at_cmdset_get(**kwargs) - this is called when the cmdset is accessed and should
+                            rebuild the Exit cmdset along with a command matching the name
+                            of the Exit object. Conventionally, a kwarg `force_init`
+                            should force a rebuild of the cmdset, this is triggered
+                            by the `@alias` command when aliases are changed.
+    at_failed_traverse() - gives a default error message ("You cannot
                             go there") if exit traversal fails and an
                             attribute `err_traverse` is not defined.
 

@@ -33,7 +33,16 @@ from evennia.settings_default import *
 ######################################################################
 
 # This is the name of your game. Make it catchy!
-SERVERNAME = "DanMachi"
+SERVERNAME = "MyGame"
+TIME_ZONE = "America/Chicago"
+USE_TZ = True
+IN_GAME_ERRORS = True
+BROADCAST_SERVER_RESTART_MESSAGES = True
+NEW_ACCOUNT_REGISTRATION_ENABLED = False
+
+WEBSOCKET_CLIENT_URL="wss://evennia.lytle.pw:4002/"
+
+CSRF_TRUSTED_ORIGINS = ['https://evennia.lytle.pw']
 
 
 # Multiple characters per account, requires manual creation and login
@@ -45,10 +54,74 @@ MAX_NR_CHARACTERS = 5
 DEBUG = False
 # COMMAND_DEFAULT_CLASS = "commands.command.Command"
 
-# INSTALLED_APPS += ('web.chargen', 'web.character', )
+INSTALLED_APPS += ('web.chargen', 'web.character',
+                   'django.contrib.humanize.apps.HumanizeConfig',
+                   'django_nyt.apps.DjangoNytConfig',
+                   'mptt',
+                   'sorl.thumbnail',
+                   'wiki.apps.WikiConfig',
+                   'wiki.plugins.attachments.apps.AttachmentsConfig',
+                   'wiki.plugins.notifications.apps.NotificationsConfig',
+                   'wiki.plugins.images.apps.ImagesConfig',
+                   'wiki.plugins.macros.apps.MacrosConfig',
+                   )
+
+# Disable wiki handling of login/signup, so that it uses your Evennia login system instead
+WIKI_ACCOUNT_HANDLING = False
+WIKI_ACCOUNT_SIGNUP_ALLOWED = False
+
+# Enable wikilinks, e.g. [[Getting Started]]
+WIKI_MARKDOWN_KWARGS = {
+    'extensions': [
+        'wikilinks',
+    ]
+}
 
 
-# CHARGEN_MENU = "world.chargen_menu"
+# Custom methods to link wiki permissions to game perms
+def is_superuser(article, user):
+    """Return True if user is a superuser, False otherwise."""
+    return not user.is_anonymous and user.is_superuser
+
+
+def is_builder(article, user):
+    """Return True if user is a builder, False otherwise."""
+    return not user.is_anonymous and user.permissions.check("Builder")
+
+
+def is_player(article, user):
+    """Return True if user is a builder, False otherwise."""
+    return not user.is_anonymous and user.permissions.check("Player")
+
+
+# Create new users
+WIKI_CAN_ADMIN = is_superuser
+
+# Change the owner and group for an article
+WIKI_CAN_ASSIGN = is_superuser
+
+# Change the GROUP of an article, despite the name
+WIKI_CAN_ASSIGN_OWNER = is_superuser
+
+# Change read/write permissions on an article
+WIKI_CAN_CHANGE_PERMISSIONS = is_superuser
+
+# Mark an article as deleted
+WIKI_CAN_DELETE = is_builder
+
+# Lock or permanently delete an article
+WIKI_CAN_MODERATE = is_superuser
+
+# Create or edit any pages
+WIKI_CAN_WRITE = is_builder
+
+# Read any pages
+WIKI_CAN_READ = is_player
+
+# Completely disallow editing and article creation when not logged in
+WIKI_ANONYMOUS_WRITE = False
+
+CHARGEN_MENU = "world.chargen_menu"
 
 
 DATABASES = {
@@ -62,12 +135,15 @@ DATABASES = {
     }
 }
 
+
 ######################################################################
 # XYZ Grid install settings
 ######################################################################
 
 # make contrib prototypes available as parents for map nodes
-PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes', 'world.items.prototypes_gathering', 'world.items.prototypes_crafting', 'world.items.prototypes_tools']
+PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes', 'world.items.gear.prototypes_gathering',
+                      'world.items.gear.prototypes_crafting', 'world.items.gear.prototypes_tools',
+                      'world.items.gear.prototypes_containers', 'world.items.furniture.pt_fountains']
 
 # add launcher command
 EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand'

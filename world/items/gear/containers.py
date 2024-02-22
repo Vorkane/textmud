@@ -1,18 +1,40 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+from evennia.contrib.game_systems.containers import ContribContainer
 
 
-class Bag(ContribRPObject):
-    """
-    This class is for a container classified as a bag.
-    A bag is an object that can be equipped and/or carried on the player.
-    """
-    container_type = "bag"
-    weight_current = 0
-    weight_capacity = 2
-    weight_reduction = 0
-    item_limit = 2
-    current_item = 0
+class Bag(ContribContainer):
+    # """
+    # This class is for a container classified as a bag.
+    # A bag is an object that can be equipped and/or carried on the player.
+    # """
 
+    # def at_object_creation(self):
+    #     super().at_object_creation()
+    #     self.locks.add("get_from:true()")
+
+    # def at_pre_get_from(self, getter, target, **kwargs):
+    #     """
+    #     This will be called when something attempts to get another object FROM this object,
+    #     rather than when getting this object itself.
+
+    #     Args:
+    #         getter (Object): The actor attempting to take something from this object.
+    #         target (Object): The thing this object contains that is being removed.
+
+    #     Returns:
+    #         boolean: Whether the object `target` should be gotten or not.
+
+    #     Notes:
+    #         If this method returns False/None, the getting is cancelled before it is even started.
+    #     """
+    #     return True
+
+    # container_type = "bag"
+    # weight_current = 0
+    # weight_capacity = 2
+    # weight_reduction = 0
+    # item_limit = 2
+    # current_item = 0
     pass
 
 
@@ -43,6 +65,10 @@ class Canteen(ContribRPObject):
         self.db.volume_current = 0
         self.db.volume_capacity = 10
         self.db.fluid_type = ""
+
+    @property
+    def is_liquid_container(self):
+        return True
 
     def do_fillable(self, fluid):
         """

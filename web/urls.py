@@ -27,9 +27,13 @@ urlpatterns = [
     path("admin/", include("web.admin.urls")),
     # add any extra urls here:
     # path("mypath/", include("path.to.my.urls.file")),
-     # make all chargen endpoints available under /chargen url
+    # make all chargen endpoints available under /chargen url
     path("chargen/", include("web.chargen.urls")),
     path("char/", include('web.character.urls')),
+    # wiki
+    path("wiki/", include("wiki.urls")),
+    path("notifications/", include("django_nyt.urls")),
+
 
 ]
 
