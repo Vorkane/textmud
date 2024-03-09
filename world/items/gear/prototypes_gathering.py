@@ -6,7 +6,7 @@ Prototypes for Gather Resources
 
 from random import randint
 
-### Mineral Based Materials and Gather Nodes
+# Mineral Based Materials and Gather Nodes
 
 IRON_ORE_NODE = {
     "typeclass": "world.items.mining.OreGatherNode",
@@ -21,9 +21,8 @@ IRON_ORE = {
     "typeclass": "world.items.mining.IronOre",
     "key": "iron ore",
     "desc": "A clump of raw iron ore.",
-    "tags": [("iron ore","crafting_material")],
+    "tags": [("iron ore", "crafting_material")],
     "value": 2,
 }
 
-
-### Wood Based Materials and Gather Nodes
+# Wood Based Materials and Gather Nodes

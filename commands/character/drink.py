@@ -13,7 +13,7 @@ class CmdFill(Command):
 
     key = "fill"
 
-    def parse(self, debug=True):
+    def parse(self, debug=False):
         self.args = self.args.strip()
         target_container_entry, *from_container_entry = self.args.split(" from ", 1)
 
@@ -33,6 +33,16 @@ class CmdFill(Command):
             from_ok = hasattr(self.from_container, "is_liquid_container")
             self.caller.msg(f"Target container: {self.target_container}, {target_ok}")
             self.caller.msg(f"From container: {self.from_container}, {from_ok}")
+
+        caller = self.caller
+        location = caller.location
+
+        target_fill = hasattr(self.target_container, "is_liquid_container")
+        from_fill = hasattr(self.from_container, "is_liquid_container")
+
+        filleable = self.from_container
+
+        filleable.at_fill(self.target_container, self.caller)
 
     def func(self):
 

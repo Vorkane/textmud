@@ -29,6 +29,8 @@ stats = {
     'HP': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Health'},
     'MP': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Mana'},
     'ST': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Stamina'},
+    'Thirst': {'trait_type': 'static', 'base': 100, 'max': 100, 'name': 'Thirst'},
+    'Hunger': {'trait_type': 'static', 'base': 100, 'max': 100, 'name': 'Hunger'},
     # Misc
     'ENC': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Carry Weight'},
     'LV': {'trait_type': 'static', 'base': 1, 'mod': 0, 'name': 'Level'},

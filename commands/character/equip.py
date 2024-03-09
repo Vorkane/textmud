@@ -5,6 +5,7 @@ from commands.command import MuxCommand
 
 from world.items.gear.crafting_tools import CraftingTool
 from world.items.gear.crafting_tools import PickAxe
+from world.items.gear.armor import Torso, Helm, Boots, Gloves, Necklace, Bracers, Belt, Ring
 
 # __all__ = ('CmdEquip', 'CmdWear', 'CmdWield', 'CmdRemove')
 __all__ = ('CmdEquip', 'CmdInventory', 'CmdWield', 'CmdRemove')
@@ -136,8 +137,8 @@ class CmdEquip(MuxCommand):
                 else:
                     if any(isinstance(obj, i) for i in (CraftingTool, PickAxe)):
                         action = 'wield'
-                    # elif any(isinstance(obj, i) for i in (Torso, Helm, Boots, Gloves, Necklace, Bracers, Belt, Ring)):
-                    #    action = 'wear'
+                    elif any(isinstance(obj, i) for i in (Torso, Helm, Boots, Gloves, Necklace, Bracers, Belt, Ring)):
+                        action = 'wear'
                     else:
                         caller.msg("You can't equip {}.".format(obj.get_display_name(caller)))
 
@@ -217,6 +218,49 @@ class CmdEquip(MuxCommand):
                 output = "|YYour equipment:|n\n{}".format(table)
 
             caller.msg(output)
+
+
+class CmdWear(MuxCommand):
+    """
+    wear an item
+    Usage:
+      wear[/swap] <item>
+    Switches:
+      s[wap] - replaces any currently equipped item
+    Equips a set of armor from your inventory to an available armor
+    equipment slot on your character.
+    """
+    key = "wear"
+    locks = "cmd:all()"
+    wield = False
+
+    def func(self):
+        caller = self.caller
+        args = self.args.strip()
+
+        if not args:
+            caller.msg("Wear what?")
+            return
+
+        obj = caller.search(
+            args,
+            candidates=caller.contents,
+            nofound_string=_INVENTORY_ERRMSG.format(args))
+
+        if not obj:
+            return
+
+        elif any(obj.is_typeclass(i, exact=False) for i in (Torso, Helm, Boots, Gloves, Necklace, Bracers, Belt, Ring)):
+            sw = ("/{}".format("/".join(self.switches))
+                  if self.switches else "")
+
+            caller.execute_cmd('equip',
+                               args=' '.join((sw, args)),
+                               item=obj,
+                               action='wear')
+        else:
+            caller.msg("You can't wear {}.".format(
+                obj.get_display_name(caller)))
 
 
 class CmdWield(MuxCommand):

@@ -143,7 +143,8 @@ DATABASES = {
 # make contrib prototypes available as parents for map nodes
 PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes', 'world.items.gear.prototypes_gathering',
                       'world.items.gear.prototypes_crafting', 'world.items.gear.prototypes_tools',
-                      'world.items.gear.prototypes_containers', 'world.items.furniture.pt_fountains']
+                      'world.items.gear.prototypes_containers', 'world.items.furniture.pt_fountains', 
+                      'world.items.gear.prototypes_gear']
 
 # add launcher command
 EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand'

@@ -5,27 +5,9 @@ Rooms are simple containers that has no location of their own.
 
 """
 
-from evennia.objects.objects import DefaultRoom
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom
-from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 
-
-import textwrap
-
-from .objects import ObjectParent
-
-from copy import deepcopy
-
-from evennia.objects.objects import DefaultRoom
-from evennia.utils.utils import inherits_from
-from evennia.contrib.grid import wilderness
 from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom
-
-#from world.overworld import Overworld, OverworldMap
-
-from .objects import ObjectParent
-from .characters import Character
-
 
 
 class Room(ContribRPRoom):
@@ -42,17 +24,15 @@ class Room(ContribRPRoom):
     allow_combat = False
     allow_pvp = False
     allow_death = False
-    
 
     appearance_template = (
         '{header}'
-        f"{'|510[ |n'}{'|530{name}|n |510]|n'}\n\n"
-        '{desc}\n\n'        
-        '\n'
+        f"{'|510[ |n'}{'|224{name}|n |510]|n'}\n\n"
+        '{desc}\n\n'
         f"{'|510[ |n'}{'|530Exits|n |510]|n'}\n"
         '{exits}\n'
         '{things}\n'
-        '{characters}\n'        
+        '{characters}\n'
         '{footer}'
         '\n\n'
     )
@@ -65,7 +45,8 @@ class Room(ContribRPRoom):
     # {footer}
     # """
 
-    #pass
+    # pass
+
 
 """
 Room
@@ -97,7 +78,6 @@ _EXIT_GRID_SHIFT = {
     "southwest": (-1, -1, "/"),
     "northwest": (-1, 1, "\\"),
 }
-
 
 """ class OverworldRoom(wilderness.WildernessRoom, Room):
     """"""""
@@ -137,6 +117,7 @@ _EXIT_GRID_SHIFT = {
         tile_str = "\n".join(rows)
 
         return tile_str """
+
 
 class TownRoom(Room, XYZRoom):
     """

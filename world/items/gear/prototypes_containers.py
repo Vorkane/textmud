@@ -18,5 +18,7 @@ CANTEEN = {
     "key": "canteen",
     "desc": "This is a basic canteen.",
     "tags": [("canteen")],
-    "capacity": 10
+    "fluid_type": "",
+    "volume_max": 10,
+    "volume_current": 0
 }

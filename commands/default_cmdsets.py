@@ -31,8 +31,10 @@ from functools import wraps
 # World Custom
 from commands.character.drink import CmdFill
 from commands.character.equip import CmdWield
+from commands.character.equip import CmdWear
 from commands.character.equip import CmdEquip
 from commands.character.equip import CmdRemove
+from commands.character.sheets import CmdEquipmentSheet
 from commands.ooc.wiki import CmdWiki
 from .building.building import EditCmd
 from evennia.contrib.grid.xyzgrid.commands import XYZGridCmdSet
@@ -79,9 +81,11 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         # self.add_blacksmith_standard_cmdsets()
         self.add(CmdEquip())
         self.add(CmdWield())
+        self.add(CmdWear())
         self.add(CmdRemove())
         self.add(GenericBuildingCmd())
         self.add(EditCmd())
+        self.add(CmdEquipmentSheet())
         self.add(custom_commands.CmdStatus())
         self.add(custom_commands.CmdSheet())
         self.add(custom_commands.CmdProf())
