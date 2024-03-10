@@ -15,7 +15,7 @@ STONE_PICKAXE = {
 IRON_PICKAXE = {
     "typeclass": "world.items.gear.crafting_tools.PickAxe",
     "key": "iron pickaxe",
-    "desc": "This is a iron pickaxe.",
+    "desc": "This is an iron pickaxe.",
     "tags": [("iron pickaxe", "gathering_tools")],
     "tier": "2",
     "quality": "Unique"

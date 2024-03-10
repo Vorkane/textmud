@@ -33,7 +33,7 @@ stats = {
     'Hunger': {'trait_type': 'static', 'base': 100, 'max': 100, 'name': 'Hunger'},
     # Misc
     'ENC': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Carry Weight'},
-    'LV': {'trait_type': 'static', 'base': 1, 'mod': 0, 'name': 'Level'},
+    'LV': {'trait_type': 'static', 'base': 1, 'mod': 0, 'max': 999, 'name': 'Level'},
     'XP': {'trait_type': 'counter', 'base': 0, 'mod': 0, 'name': 'Experience', 'extra': {'level_boundaries': (500, 2000, 4500, 'unlimited')}},
 }
 

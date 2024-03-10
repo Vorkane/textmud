@@ -62,10 +62,11 @@ class CmdStatus(DanMachiCommand):
             f"{'|CStrength:|w':<20}{self.caller.stats.STR.base:<20}\n{'|CEndurance:|w':<20}{self.caller.stats.END.base:<20}\n{'|CDexterity:|w':<20}{self.caller.stats.DEX.base:<20}\n"
             f"{'|CAgility:|w':<20}{self.caller.stats.AGI.base:<20}\n{'|CMagic:|w':<20}{self.caller.stats.MAG.base:<20}\n{'|CLuck:|w':<20}{self.caller.stats.LUK.base:<20}|n\n"
             f"{'< Status >':=^80}\n"
-            f"{'|CBlacksmithing|w':<20}{self.caller.skills.BLACKSMITH.base:<5}{self.caller.skills.BLACKSMITH.xp:<10}{self.caller.skills.BLACKSMITH.xptnl:<10}|n\n"
+            f"{'|CSkill|w':<20}{'|CLevel|w':<14}{'|CXP|w':<14}{'|CXPMax|w':<20}|n\n"
+            f"{'|CBlacksmithing|w':<20}{self.caller.skills.BLACKSMITH.base:<10}{self.caller.skills.BLACKSMITH.xp:<10}{self.caller.skills.BLACKSMITH.xptnl:<10}|n\n"
             # f"{''.join([key.name(self.caller) for key in self.caller.skills.items()])}"
 
-            f"{'You have earned a total of '}{self.caller.stats.XP.max}{' experience.'}\n"
+            f"{'You have earned a total of '}{self.caller.stats.XP.total}{' experience.'}\n"
             f"{'You have '}{self.caller.stats.XP.current}{' unspent experience.'}\n"
             # f"{'You have '}{self.caller.iron}{ ' Iron.'}\n"
             # f"{'|CPri:|w' : <10}({self.caller.level:3}) {self.caller.pri_class.name : <10}|n {'|CPri Exp TNL:|w' : <13}{self.caller.pri_xp_tnl - self.caller.currentxp : <15}|n\n"

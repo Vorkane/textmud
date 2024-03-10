@@ -50,11 +50,11 @@ class OreGatherNode(ContribRPObject):
 
         if amt == remaining:
             chara.msg(f"You collect the last {obj.get_numbered_name(amt, chara)[1]}.")
-            chara.skills.BLACKSMITH.xp += 0.1 * amt
+            chara.skills.BLACKSMITH.xp += 1 * amt
             self.delete()
         else:
             chara.msg(f"You collect {obj.get_numbered_name(amt, chara)[1]}.")
-            chara.skills.BLACKSMITH.xp += 0.1 * amt
+            chara.skills.BLACKSMITH.xp += 1 * amt
             self.db.gathers -= amt
 
 
@@ -137,7 +137,7 @@ class IronOre(Ore):
     def at_object_creation(self):
         super(IronOre, self).at_object_creation()
         self.key = "iron ore"
-        self.name = "|Riron ore|n"
+        self.name = "iron ore"
         self.db.desc = "A piece of iron ore."
         self.db.weight = 0.75
         self.db.ore_type = "iron"  # You can change this to other ore type.

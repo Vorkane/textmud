@@ -22,7 +22,7 @@ LEATHER_BELT = {
     "typeclass": "world.items.gear.armor.Belt",
     "key": "leather belt",
     "desc": "This is a basic leather belt.",
-    "tags": [("leather hebeltm", "armor", "belt")],
+    "tags": [("leather belt", "armor", "belt")],
     "tier": "1"
 }
 

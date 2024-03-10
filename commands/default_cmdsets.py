@@ -23,6 +23,7 @@ from commands import sittables
 # Evennia Contribs
 from evennia.contrib.base_systems.building_menu import GenericBuildingCmd
 from evennia.contrib.game_systems.containers import containers
+from evennia.contrib.game_systems.crafting.crafting import CmdCraft
 
 from functools import wraps
 
@@ -83,6 +84,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdWield())
         self.add(CmdWear())
         self.add(CmdRemove())
+        self.add(CmdCraft())
         self.add(GenericBuildingCmd())
         self.add(EditCmd())
         self.add(CmdEquipmentSheet())
