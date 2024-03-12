@@ -141,3 +141,14 @@ class IronOre(Ore):
         self.db.desc = "A piece of iron ore."
         self.db.weight = 0.75
         self.db.ore_type = "iron"  # You can change this to other ore type.
+
+
+class IronIngot(Ore):
+
+    def at_object_creation(self):
+        super(IronIngot, self).at_object_creation()
+        self.key = "iron ingot"
+        self.name = "iron ingot"
+        self.db.desc = "A piece of iron ore."
+        self.db.weight = 0.75
+        self.db.ore_type = "iron"  # You can change this to other ore type.

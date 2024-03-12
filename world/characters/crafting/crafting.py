@@ -1,6 +1,16 @@
 from random import randint
 from evennia.contrib.game_systems.crafting import CraftingRecipe
 
+"""Spawn Protoypes with quality
+
+e.g. spawn {"prototype_parent": "IRON_PICKAXE", "quality": "Rare"}
+
+Will generate an Iron Pickaxe with Rare quality
+
+Returns:
+    _type_: _description_
+"""
+
 
 class SkillRecipe(CraftingRecipe):
     """

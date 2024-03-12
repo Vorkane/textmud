@@ -14,12 +14,19 @@ class SmeltIronRecipe(SkillRecipe):
     consumable_tags = ["iron ore", "iron ore"]
     output_prototypes = [
         {
-            "key": "iron ingot",
-            "desc": "An ingot of iron.",
-            "tags": [
-                ("iron ingot", "crafting_material"),
-                ("ingot", "crafting_material"),
-            ],
-            "value": 5,
+            "prototype_parent": "IRON_INGOT",
+            "name": "iron ingot",
+            "key": "iron ingot"
         }
     ]
+    # output_prototypes = [
+    #     {
+    #         "key": "iron ingot",
+    #         "desc": "An ingot of iron.",
+    #         "tags": [
+    #             ("iron ingot", "crafting_material"),
+    #             ("ingot", "crafting_material"),
+    #         ],
+    #         "value": 5,
+    #     }
+    # ]
