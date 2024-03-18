@@ -23,7 +23,7 @@ from commands import sittables
 # Evennia Contribs
 from evennia.contrib.base_systems.building_menu import GenericBuildingCmd
 from evennia.contrib.game_systems.containers import containers
-from evennia.contrib.game_systems.crafting.crafting import CmdCraft
+# from evennia.contrib.game_systems.crafting.crafting import CmdCraft
 
 from functools import wraps
 
@@ -39,6 +39,7 @@ from commands.character.sheets import CmdEquipmentSheet
 from commands.ooc.wiki import CmdWiki
 from .building.building import EditCmd
 from evennia.contrib.grid.xyzgrid.commands import XYZGridCmdSet
+from world.characters.crafting.crafting import CmdCraftNew
 
 
 def check_errors(func):
@@ -84,7 +85,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdWield())
         self.add(CmdWear())
         self.add(CmdRemove())
-        self.add(CmdCraft())
+        self.add(CmdCraftNew())
         self.add(GenericBuildingCmd())
         self.add(EditCmd())
         self.add(CmdEquipmentSheet())

@@ -19,6 +19,26 @@ class SmeltIronRecipe(SkillRecipe):
             "key": "iron ingot"
         }
     ]
+
+
+class SmeltRecipe(SkillRecipe):
+    """
+    Smelting iron ore into ingots
+    """
+
+    skill = ('BLACKSMITH', 0)
+    exp_gain = 1
+
+    name = "ingot"
+    # tool_tags = ["furnace"]
+    consumable_tags = ["ore", "ore"]
+    output_prototypes = [
+        {
+            "prototype_parent": "IRON_INGOT",
+            "name": "iron ingot",
+            "key": "iron ingot"
+        }
+    ]
     # output_prototypes = [
     #     {
     #         "key": "iron ingot",

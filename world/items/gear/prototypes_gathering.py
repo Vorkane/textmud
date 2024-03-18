@@ -21,7 +21,7 @@ IRON_ORE = {
     "typeclass": "world.items.mining.IronOre",
     "key": "iron ore",
     "desc": "A clump of raw iron ore.",
-    "tags": [("iron ore", "crafting_material")],
+    "tags": [("iron ore", "crafting_material"), ("iron", "material"), ("ore", "crafting_material")],
     "value": 2,
 }
 

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 Races Module
 
 This module contains data and functions relating to Races. Its
-public module functions are to be used primarily during the 
+public module functions are to be used primarily during the
 character creation process.
 
 classes:
@@ -46,7 +46,6 @@ class Race:
     base_magic: int = 0
     base_luck: int = 0
 
-
     def __str__(self):
         return self.name
 
@@ -58,11 +57,13 @@ class RaceException(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+
 ALL_RACES = ('Dwarf', 'Elf', 'Half-Elf', 'Humand', 'Pallum', 'Renard')
 _SORTED_ALL_RACES = sorted(list(ALL_RACES))
 KINGDOM_RACES = ('Human', 'Elf', 'Dwarf', 'Gnome', 'Centaur', 'Ogryn')
 CALIPHATE_RACES = ('Human', 'Drow', 'Duergar', 'Svirfneblin', 'Wemic', 'Drakkar')
 EMPIRE_RACES = ('Human', 'Ursine', 'Feline', 'Lupine', 'Vulpine', 'Naga')
+
 
 def load_race(race):
     """Returns an instance of the named race class.
@@ -77,7 +78,8 @@ def load_race(race):
         return globals()[race]()
     else:
         raise RaceException("Invalid race specified.")
-    
+
+
 def apply_race(character, race):
     """Causes a Character to "become" the named race.
     Args:
@@ -143,24 +145,21 @@ class Races2(object):
         ('feet', ('boots', 'shoes',)),
     )
 
-
-
     def __init__(self):
         self.name = ""
         self.description = ""
         self.plural = ""
         self.size = ""
-        
-        
         self.bonuses = {}
         self.language = {}
+
 
 class Dwarf(Races2):
 
     name = "Dwarf"
-    desc = (f"Dwarf\n\n"
+    desc = ("Dwarf\n\n"
             "Short and strong.\n"
-    )
+            )
     str_base = 12
     end_base = 12
     dex_base = 8
@@ -181,12 +180,13 @@ class Dwarf(Races2):
         self.traits.MAG.base = 10
         self.traits.LUK.base = 10
 
+
 class Elf(Races2):
 
     name = "Elf"
-    desc = (f"Elf\n"
+    desc = ("Elf\n"
             "Skinny and Agile.\n"
-    )
+            )
 
     str_base = 8
     end_base = 10
@@ -194,7 +194,7 @@ class Elf(Races2):
     agi_base = 12
     mag_base = 12
     luk_base = 10
-
+    size = "medium"
 
     def __init__(self):
         super(Elf, self).__init__()
@@ -207,6 +207,7 @@ class Elf(Races2):
         self.traits.AGI.base = 12
         self.traits.MAG.base = 12
         self.traits.LUK.base = 10
+
 
 class HalfElf(Races2):
 
@@ -225,11 +226,12 @@ class HalfElf(Races2):
         self.traits.MAG.base = 10
         self.traits.LUK.base = 10
 
+
 class Human(Races2):
 
     name = "Human"
     desc = "Skinny and Agile."
-    
+
     def __init__(self):
         super(Human, self).__init__()
         self.name = "Human"
@@ -241,6 +243,7 @@ class Human(Races2):
         self.traits.AGI.base = 10
         self.traits.MAG.base = 10
         self.traits.LUK.base = 10
+
 
 class Pallum(Races2):
 
@@ -258,6 +261,7 @@ class Pallum(Races2):
         self.traits.AGI.base = 12
         self.traits.MAG.base = 8
         self.traits.LUK.base = 12
+
 
 class Renard(Races2):
 
@@ -278,7 +282,7 @@ class Renard(Races2):
 
 
 class Races:
-    
+
     _cached_dict = None
 
     Dwarf = Race(
@@ -358,13 +362,11 @@ class Races:
         desc="Smaller in stature, they appear similar to humans. Often called hobbits",
     )
 
-
     @classmethod
     def _get_cached_dict(cls):
         if not cls._cached_dict:
             new_dict = {value.key: value for value in cls.__dict__.values() if isinstance(value, Race)}
             cls._cached_dict = new_dict
-
         return cls._cached_dict
 
     @classmethod
@@ -378,7 +380,6 @@ class Races:
     @classmethod
     def get(cls, key):
         return cls._get_cached_dict().get(key)
-
 
 
 """     Goblin = Race(
@@ -413,5 +414,5 @@ class Races:
         cunning_mod=2,
         strength_mod=-1,
         desc="Shorter but cunning"
-    ) 
+    )
 """

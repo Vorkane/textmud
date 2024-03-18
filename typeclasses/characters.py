@@ -200,8 +200,8 @@ class Character(DefaultCharacter):
         self.db.title = ""
         self.db.race = "Human"
         self.db.permadeath = False
-        self.db.tool_tier = 0
-        self.db.wallet = {'PP': 0, 'GP': 0, 'SP': 0, 'CP': 0}
+        self.db.currency_gold = 0
+        self.db.learned_recipes = []
 
         for key, kwargs in stats.items():
             self.stats.add(key, **kwargs)
@@ -211,6 +211,8 @@ class Character(DefaultCharacter):
 
         self.stats.STR.carry_factor = 10
         self.stats.STR.lift_factor = 20
+        self.stats.ENC.current = 0
+        self.stats.XP.total = 0
         self.stats.ENC.max = self.stats.STR.lift_factor * self.stats.STR
 
         # self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
@@ -279,8 +281,6 @@ class Character(DefaultCharacter):
         # This add the handler for .reputation
         return TraitHandler(self, db_attribute_key="reputation")
 
-    is_pc = True
-
     @lazy_property
     def equip(self):
         """Handler for equipped items."""
@@ -292,3 +292,14 @@ class Character(DefaultCharacter):
     #     self.stats.ST.current += int(floor(0.1 * self.stats.ST.max))
 
     race = AttributeProperty()
+
+
+class Player(Character):
+
+    is_pc = True
+
+    pass
+
+
+class NPC(Character):
+    pass
