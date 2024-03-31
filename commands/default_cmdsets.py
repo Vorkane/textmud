@@ -93,6 +93,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(custom_commands.CmdSheet())
         self.add(custom_commands.CmdProf())
         self.add(custom_commands.CmdGain())
+        self.add(custom_commands.CmdLevel())
+        self.add(custom_commands.CmdTrain())
         self.add(sittables.CmdSit2)
         self.add(sittables.CmdStand2)
         self.add(CmdFill())

@@ -1,6 +1,8 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 # from evennia.objects.objects import DefaultObject
 from evennia.contrib.game_systems.containers import ContribContainer
+from world.rulebook import item_durability
+from evennia.utils.evform import EvForm
 
 
 class Item(ContribRPObject):
@@ -17,8 +19,8 @@ class Item(ContribRPObject):
     value = 0
     weight = 0.0
     hardness = 0
-    current = 0
-    durability = 0
+    curr_dura = 0
+    max_dura = 0
 
     def get_display_name(self, looker, **kwargs):
         # grab the color code stored in db.color_code,
@@ -50,15 +52,33 @@ class Item(ContribRPObject):
         self.db.value = self.value
         self.db.weight = float(self.weight)
         self.db.hardness = self.hardness
-        self.db.durability = self.durability
-        self.db.current = self.current
+        self.db.max_dura = self.max_dura
+        self.db.curr_dura = self.max_dura
 
     def return_appearance(self, looker):
         if not looker:
             return
 
-        looker.msg("%s|/" % self.db.desc)
-        # looker.msg("%s %s." % (self.key, item_dura(self)))
+        form = EvForm('commands.templates.itemsheet', align='l')
+        form.map(cells={'A': self.get_display_name(self),
+                        'B': self.db.curr_dura,
+                        'C': self.db.max_dura,
+                        'D': self.db.desc,
+                        'E': item_durability(self) if (self.max_dura) else "None"})
+
+        # fields = {
+        #     'A': self.key,
+        #     'B': self.db.curr_dura,
+        #     'C': self.db.max_dura,
+        #     'D': self.db.desc,
+        # }
+
+        # form.map({k: self._format_trait_val(v) for k, v in fields.items()})
+
+        looker.msg(form)
+
+        # looker.msg("%s|/" % self.db.desc)
+        # looker.msg("%s %s." % (self.key, item_durability(self)))
 
     def at_get(self, getter):
         pass

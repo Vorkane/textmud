@@ -18,5 +18,7 @@ IRON_PICKAXE = {
     "desc": "This is an iron pickaxe.",
     "tags": [("iron pickaxe", "gathering_tools")],
     "tier": "2",
+    "curr_dura": 50,
+    "max_dura": 50,
     "quality": "Unique"
 }

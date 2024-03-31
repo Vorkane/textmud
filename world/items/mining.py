@@ -2,6 +2,7 @@ from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 # from typeclasses.objects import Object
 from random import randint
 from evennia.prototypes import spawner
+from world.items.items import Item
 # from commands.skills.blacksmithing import MineCmdSet
 
 
@@ -77,7 +78,7 @@ class OreNode(ContribRPObject):
     is_mineable = True
 
 
-class Ore(ContribRPObject):
+class Ore(Item):
     """
     Typeclass for Ore Objects.
     Attributes:

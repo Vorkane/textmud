@@ -9,6 +9,7 @@ from evennia.utils import evtable
 from typeclasses.characters import wield_slots
 from typeclasses.characters import armor_slots
 from typeclasses.characters import clothing_slots
+from world import rulebook
 
 import math
 
@@ -54,7 +55,7 @@ class CmdStatus(DanMachiCommand):
         _CHAR_STATUS = (
             f"\n\n"
             f"{'< Details >':=^80}\n"
-            f"{'|CName:|w':10}{self.caller.name:25}\n"
+            f"{'|CName:|w':10}{self.caller.name:20}{'|CLevel:|w':12}{self.caller.stats.LV.actual:<20}|n\n"
             f"{'|CRace:|w':10}{self.caller.race:20}{'|CGender:|w':12}Male{'':16}|n\n"
             f"{'< Vitals >':=^80}\n"
             f"{'|CHealth:|w':<12}{self.caller.stats.HP.current}{'|W('}{self.caller.stats.HP.max}{')|n':<10}{'|CMana:|w':<10}{self.caller.stats.MP.current}{'|W('}{self.caller.stats.MP.max}{')|n':<10}{'|CStamina:|w':<13}{(2 / self.caller.stats.ST.max) * 100}%{'|n':<5}\n"
@@ -62,8 +63,8 @@ class CmdStatus(DanMachiCommand):
             f"{'|CStrength:|w':<20}{self.caller.stats.STR.base:<20}\n{'|CEndurance:|w':<20}{self.caller.stats.END.base:<20}\n{'|CDexterity:|w':<20}{self.caller.stats.DEX.base:<20}\n"
             f"{'|CAgility:|w':<20}{self.caller.stats.AGI.base:<20}\n{'|CMagic:|w':<20}{self.caller.stats.MAG.base:<20}\n{'|CLuck:|w':<20}{self.caller.stats.LUK.base:<20}|n\n"
             f"{'< Status >':=^80}\n"
-            f"{'|CSkill|w':<20}{'|CLevel|w':<14}{'|CXP|w':<14}{'|CXPMax|w':<20}|n\n"
-            f"{'|CBlacksmithing|w':<20}{self.caller.skills.BLACKSMITH.base:<10}{self.caller.skills.BLACKSMITH.xp:<10}{self.caller.skills.BLACKSMITH.xptnl:<10}|n\n"
+            f"{'|RSkill|w':<20}{'|RLevel|w':<14}{'|RXP|w':<14}|n\n"
+            f"{'|CBlacksmithing|w':<20}{self.caller.skills.BLACKSMITH.base:<10}{(self.caller.skills.BLACKSMITH.xptnl - self.caller.skills.BLACKSMITH.xp):<10}|n\n\n"
             # f"{''.join([key.name(self.caller) for key in self.caller.skills.items()])}"
 
             f"{'You have earned a total of '}{self.caller.stats.XP.total}{' experience.'}\n"
@@ -93,18 +94,62 @@ class CmdProf(DanMachiCommand):
         self.caller.msg(_CHAR_STATUS)
 
 
+class CmdLevel(MuxCommand):
+
+    key = "level"
+    locks = 'cmd:all()'
+
+    def func(self):
+        tr = self.caller.stats
+        lvl = str(tr.LV.actual + 1)
+        xp1 = rulebook.LEVEL[lvl]['xp']
+        xp2 = rulebook.LEVEL[lvl]['xp'] - tr.XP.actual
+        self.caller.msg("|MLEVEL %s ADVANCEMENT\n"
+                        "Advancement will cost %s Experience\n"
+                        "|CYou will need %s more Experiencee" % (lvl, xp1, xp2))
+
+
 class CmdGain(DanMachiCommand):
     key = "gain"
+
+    def func(self):
+        lvl = str(self.caller.stats.LV.actual + 1)
+
+        caller = self.caller
+
+        if self.caller.stats.XP.current >= rulebook.LEVEL[lvl]['xp']:
+            caller.msg("You leveled up")
+            self.caller.stats.LV.actual += 1
+            self.caller.stats.XP.current -= rulebook.LEVEL[lvl]['xp']
+        elif self.caller.stats.XP.current < rulebook.LEVEL[lvl]['xp']:
+            caller.msg("You did not level up")
+
+
+class CmdTrain(MuxCommand):
+    key = "train"
+    locks = 'cmd:all()'
 
     def func(self):
 
         caller = self.caller
 
-        f"{'Test output'}"
-        if self.caller.currentxp >= self.caller.pri_xp_tnl:
-            caller.msg("You leveled up")
-        elif self.caller.currentxp < self.caller.pri_xp_tnl:
-            caller.msg("You did not level up")
+        if not self.args:
+            caller.msg("Usage: train <skill>")
+            return
+
+        req_skill = self.args.upper()
+        req_skill_proper = self.args.title()
+
+        if not caller.skills[req_skill]:
+            caller.msg(f"You do not have the skill {req_skill_proper}.")
+            return
+
+        if caller.skills[req_skill].xp >= caller.skills[req_skill].xptnl:
+            caller.msg(f"You have skilled up {req_skill_proper}.")
+            caller.skills[req_skill].base += 1
+            caller.skills[req_skill].xp = 0
+        elif caller.skills[req_skill].xp < caller.skills[req_skill].xptnl:
+            caller.msg(f"You do not have enough experience to level up {req_skill_proper}.")
 
 
 class CmdInventoryExtended(Command):
@@ -316,87 +361,6 @@ class CmdExtendedGet(default_cmds.CmdGet):
                 )
             # calling at_get hook method
             obj.at_get(caller)
-
-
-# class CmdExtendedGet(default_cmds.CmdGet):
-#     """
-#     pick up something
-#     Usage:
-#         get <obj>
-#         get all
-
-#     Picks up an object from your location and puts it in
-#     your inventory. Alternatively if all is used will pick
-#     up everything in the room that can be picked up  and
-#     placed into your inventory.
-
-#     """
-#     key = "get"
-#     aliases = "grab"
-#     locks = "cmd:all()"
-
-#     def func(self):
-#         """implements the command."""
-
-#         caller = self.caller
-
-#         if 'all' in self.args:
-#             for obj in caller.location.contents:
-#                 if not obj.access(caller, 'get'):
-#                     if obj.db.get_err_msg:
-#                         caller.msg(obj.db.get_err_msg)
-#                     else:
-#                         caller.msg("You can't get that.")
-#                     return
-
-#                 obj.move_to(caller, quiet=True)
-#                 caller.msg("You pick up %s." % obj.name)
-#                 caller.location.msg_contents("%s picks up %s." % (caller.name, obj.name), exclude=caller)
-
-#                 obj.at_get(caller)
-
-#         if not self.args:
-#             caller.msg("Get what?")
-#             return
-
-#         result = caller.search(self.args,
-#                                location=caller.location,
-#                                quiet=True)
-#         if not result:
-#             caller.msg("{} not found".format(self.args))
-#             return
-#         else:
-#             obj = result[0]
-
-#         if caller == obj:
-#             caller.msg("You can't get yourself.")
-#             return
-
-#         if not obj.access(caller, 'get'):
-#             if obj.db.get_err_msg:
-#                 caller.msg(obj.db.get_err_msg)
-#             else:
-#                 caller.msg("You can't get that.")
-#             return
-
-#         obj.move_to(caller, quiet=True)
-#         caller.msg("You pick up %s." % obj.name)
-#         caller.location.msg_contents("%s picks up %s." %
-#                                      (caller.name,
-#                                       obj.name),
-#                                      exclude=caller)
-#         # calling hook method
-#         # obj.at_get(caller)
-
-#     def at_post_cmd(self):
-#         """
-#         This hook is called after the command has finished executing
-#         (after self.func()).
-#         """
-#         "called after self.func()."
-#         caller = self.caller
-#         prompt = ">"
-#         caller.msg("", prompt=prompt)
 
 
 class CmdPut(default_cmds.CmdDrop):

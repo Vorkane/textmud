@@ -43,7 +43,7 @@ clothing_slots = ['hat', 'accessory', 'overtop', 'bottom', 'belt2', 'accessory2'
 
 
 skills = {
-    'BLACKSMITH': {'trait_type': 'static', 'base': 0, 'xp': 0, 'xptnl': 100, 'name': 'Blacksmithing'},
+    'BLACKSMITHING': {'trait_type': 'static', 'base': 0, 'xp': 0, 'xptnl': 100, 'name': 'Blacksmithing'},
 }
 
 # self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
