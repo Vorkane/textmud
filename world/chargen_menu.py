@@ -77,7 +77,7 @@ def node_change_name(caller, raw_string, **kwargs):
         "key": "_default",
         "goto": (_update_name, kwargs)
     }
-    return text, optionss
+    return text, options
 
 def menunode_welcome(caller):
     """Starting page."""

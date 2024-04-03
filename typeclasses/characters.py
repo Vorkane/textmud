@@ -50,7 +50,40 @@ skills = {
 # self.skills.add("Prowl", "Prowl Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
 
 
-class Character(DefaultCharacter):
+class LivingMixin:
+
+    is_pc = False
+
+    @property
+    def hurt_level(self):
+        percent = max(0, min(100, 100 * (self.stats.HP.current / self.stats.HP.max)))
+        if 95 < percent <= 100:
+            return '|gPerfect|n'
+        if 80 < percent <= 95:
+            return "|gScraped|n"
+        elif 60 < percent <= 80:
+            return "|GBruised|n"
+        elif 45 < percent <= 60:
+            return "|yHurt|n"
+        elif 30 < percent <= 45:
+            return "|yWounded|n"
+        elif 15 < percent <= 30:
+            return "|rBadly wounded|n"
+        elif 1 < percent <= 15:
+            return "|rBarely hanging on|n"
+        elif percent == 0:
+            return "|RCollapsed!|n"
+
+    def heal(self, hp):
+        """
+        Heal hp amount of health, not allowng to exceed our max hp
+        """
+        damage = self.stats.HP.max - self.stats.HP.current
+        healed = min(damage, hp)
+        self.stats.HP.current += healed
+
+
+class Character(LivingMixin, DefaultCharacter):
     """
     The Character defaults to reimplementing some of base Object's hook methods with the
     following functionality:
@@ -162,7 +195,7 @@ class Character(DefaultCharacter):
         if not source_location and self.location.has_account:
             # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % self.get_display_name(self.location)
+            string = "You now have %s in your possession." % self.get_extra_display_name_info(self.location)
             self.location.msg(string)
             return
 
@@ -215,17 +248,7 @@ class Character(DefaultCharacter):
         self.stats.XP.total = 0
         self.stats.ENC.max = self.stats.STR.lift_factor * self.stats.STR
 
-        # self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
-        # self.skills.add("Prowl", "Prowl Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
-
-        # # Add proficiencies
-        # self.proficiencies.add("sword", "Sword Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
-        # self.proficiencies.add("dagger", "Dagger Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
-        # self.proficiencies.add("spear", "Spear Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
-        # self.proficiencies.add("axe", "Axe Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
-        # self.proficiencies.add("blunt", "Blunt Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
-        # self.proficiencies.add("archery", "Archery Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
-        # self.proficiencies.add("throwing", "Throwing Proficiency", trait_type="counter", base=5, mod=0, min=0, max=100, descs={0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"})
+        self.tags.add("pcs", category="group")
 
     def at_post_puppet(self):
         # self.location.msg_contents("%s has connected" % self.key)
@@ -302,4 +325,13 @@ class Player(Character):
 
 
 class NPC(Character):
+
+    is_pc = False
+
+    def at_object_creation(self):
+        self.stats.HP.current = self.stats.HP.max
+        self.tags.add("npcs", category="group")
+
+
+class Mob(NPC):
     pass

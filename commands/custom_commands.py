@@ -185,7 +185,7 @@ class CmdInventoryExtended(Command):
         wear_table = evtable.EvTable(border="header")
 
         carried = [obj for obj in items if not obj.db.worn]
-        names_and_descs = [(obj.get_display_name(self.caller), obj.get_display_desc(self.caller)) for obj in set(carried)]
+        names_and_descs = [(obj.get_extra_display_name_info(self.caller), obj.get_display_desc(self.caller)) for obj in set(carried)]
         carried_sums = {tup: names_and_descs.count(tup) for tup in set(names_and_descs)}
         worn = [obj for obj in items if obj.db.worn]
 
@@ -202,7 +202,7 @@ class CmdInventoryExtended(Command):
 
         # message_list.append("|wYou are wearing:|n")
         for item in worn:
-            item_name = item.get_display_name(self.caller)
+            item_name = item.get_extra_display_name_info(self.caller)
             if item.db.covered_by:
                 item_name += " (hidden)"
             wear_table.add_row(item_name, item.get_display_desc(self.caller))
@@ -219,9 +219,9 @@ class CmdInventoryExtended(Command):
 Wielding: {wielding}
 Armors: {armor}
 Clothing: {clothing}
-|015=================================|n""".format(wielding="\n\t  ".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in wield_slots if self.caller.equip.get(slot)]),
-                                                  armor="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in armor_slots if self.caller.equip.get(slot)]),
-                                                  clothing="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in clothing_slots if self.caller.equip.get(slot)]))
+|015=================================|n""".format(wielding="\n\t  ".join([self.caller.equip.get(slot).get_extra_display_name_info(self.caller) for slot in wield_slots if self.caller.equip.get(slot)]),
+                                                  armor="\n\t".join([self.caller.equip.get(slot).get_extra_display_name_info(self.caller) for slot in armor_slots if self.caller.equip.get(slot)]),
+                                                  clothing="\n\t".join([self.caller.equip.get(slot).get_extra_display_name_info(self.caller) for slot in clothing_slots if self.caller.equip.get(slot)]))
         inv_carry = """
 Carrying:
 {carrying}""".format(carrying=str(carry_table))

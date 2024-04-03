@@ -1,4 +1,4 @@
 apk add mariadb-connector-c-dev
 apk add mariadb-dev
-pip install mysqlclient
+pip install mysqlclient django_nyt django-mptt sorl-thumbnail wiki
 apk add mysql-client

@@ -1,7 +1,7 @@
 from random import randint
-from evennia.contrib.game_systems.crafting import CraftingRecipe
-from evennia.contrib.game_systems.crafting import craft
-from evennia.contrib.game_systems.crafting import CmdCraft
+from .base_crafting import CraftingRecipe
+from .base_crafting import craft
+from .base_crafting import CmdCraft
 
 from evennia.utils.utils import (
     inherits_from,

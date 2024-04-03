@@ -1,7 +1,12 @@
 #!/bin/bash
 
+RED="\e[31m"
+GREEN="\e[32m"
+ENDCOLOR="\e[0m"
+
 printf "Do you want to reset the database? (Y/N) "
 read answer
+
 
 if [ "$answer" != "${answer#[Yy]}" ]; then
 	echo -e "=== ${RED}Dropping evennia database${ENDCOLOR} ==="
@@ -13,12 +18,10 @@ if [ "$answer" != "${answer#[Yy]}" ]; then
 	mysql -h10.0.10.3 -uroot -p7f927v88 -e "GRANT ALL PRIVILEGES on evennia.* TO 'evennia'@'localhost';"
 	mysql -h10.0.10.3 -uroot -p7f927v88 -e "FLUSH PRIVILEGES;"
 	echo -e "=== ${GREEN}Created evennia database${ENDCOLOR} ==="
-	echo -e "=== ${GREEN}Migrating evennia data to databse${ENDCOLOR} ==="
+	echo -e "=== ${GREEN}Migrating evennia data to database${ENDCOLOR} ==="
 	evennia migrate
-	mysql -h10.0.10.3 -uroot -p7f927v88 -e "USE evennia;INSERT INTO `accounts_accountdb` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `db_key`, `db_typeclass_path`, `db_date_created`, `db_lock_storage`, `db_is_connected`, `db_cmdset_storage`, `db_is_bot`) VALUES
-(1, 'pbkdf2_sha256$390000$qZgu2obdQvsHx39kbhFH9W$Q90oH3T4ET81DkqhhuIE4QXXy+mXGzXBX3Ti+ENs+Rw=', '2024-02-08 01:53:24.281916', 1, 'admin', '', '', '', 1, 1, '2024-02-08 01:53:15.021485', '', 'typeclasses.accounts.Account', '2024-02-08 01:53:15.542051', 'examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();noidletimeout:perm(Builder) or perm(noidletimeout)', 0, 'commands.default_cmdsets.AccountCmdSet', 0),
-(2, 'pbkdf2_sha256$390000$ETzXd3MUf3iUeeBke1tmiY$OLufmiYNRRD2ieEdGO7P+SyyBtOLNarbRi3R2asmMvE=', NULL, 1, 'vorkane', '', '', '', 1, 1, '2024-02-08 01:53:59.000000', '', 'typeclasses.accounts.Account', '2024-02-08 01:53:59.724854', 'examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();noidletimeout:perm(Builder) or perm(noidletimeout)', 0, 'commands.default_cmdsets.AccountCmdSet', 0);"
-
+#	mysql -h10.0.10.3 -uroot -p7f927v88 -e "USE evennia;INSERT INTO `accounts_accountdb` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `db_key`, `db_typeclass_path`, `db_date_created`, `db_lock_storage`, `db_is_connected`, `db_cmdset_storage`, `db_is_bot`) VALUES (1, 'pbkdf2_sha256$390000$qZgu2obdQvsHx39kbhFH9W$Q90oH3T4ET81DkqhhuIE4QXXy+mXGzXBX3Ti+ENs+Rw=', '2024-02-08 01:53:24.281916', 1, 'admin', '', '', '', 1, 1, '2024-02-08 01:53:15.021485', '', 'typeclasses.accounts.Account', '2024-02-08 01:53:15.542051', 'examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();noidletimeout:perm(Builder) or perm(noidletimeout)', 0, 'commands.default_cmdsets.AccountCmdSet', 0),(2, 'pbkdf2_sha256$390000$ETzXd3MUf3iUeeBke1tmiY$OLufmiYNRRD2ieEdGO7P+SyyBtOLNarbRi3R2asmMvE=', NULL, 1, 'vorkane', '', '', '', 1, 1, '2024-02-08 01:53:59.000000', '', 'typeclasses.accounts.Account', '2024-02-08 01:53:59.724854', 'examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();noidletimeout:perm(Builder) or perm(noidletimeout)', 0, 'commands.default_cmdsets.AccountCmdSet', 0);"
+#	mysql -h10.0.10.3 -uroot -p7f927v88 -e "USE evennia;INSERT INTO `accounts_accountdb` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `db_key`, `db_typeclass_path`, `db_date_created`, `db_lock_storage`, `db_is_connected`, `db_cmdset_storage`, `db_is_bot`) VALUES (NULL, 'pbkdf2_sha256$600000$ESxFONXGBHBIqchQXpn5Lj$7bgPtVxUyXljHHCR+WxcwFCbrDJgEaJmUj1ekJBEG5U=', NULL, '1', 'vorkane', '', '', '', '1', '1', '2024-03-31 05:39:34.807164', '', 'typeclasses.accounts.Account', '2024-03-31 05:39:35.566800', 'examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();noidletimeout:perm(Builder) or perm(noidletimeout)', '0', NULL, '0');"
 else
 	echo "No"
 	exit

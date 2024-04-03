@@ -22,6 +22,16 @@ class Item(ContribRPObject):
     curr_dura = 0
     max_dura = 0
 
+    appearance_template = """
+        {header}
+        |c{name}{extra_name_info}|n
+        {desc}
+        {exits}
+        {characters}
+        {things}
+        {footer}
+            """
+
     def get_display_name(self, looker, **kwargs):
         # grab the color code stored in db.color_code,
         # or default to "|w"

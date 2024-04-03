@@ -11,7 +11,8 @@ inheritance.
 
 """
 from evennia.objects.objects import DefaultObject
-from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+# from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+
 
 class ObjectParent:
     """
@@ -185,4 +186,4 @@ class Object(DefaultObject):
         # either create a string based on self.db.modifiers, or default to an
         # empty string
         modifiers = " ".join(self.db.modifiers or [])
-        return("{color}{name}|n{modifiers}".format(color=color, name=name, modifiers=modifiers))
+        return ("{color}{name}|n{modifiers}".format(color=color, name=name, modifiers=modifiers))

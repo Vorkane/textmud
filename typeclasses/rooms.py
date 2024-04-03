@@ -27,7 +27,7 @@ class Room(ContribRPRoom):
 
     appearance_template = (
         '{header}'
-        f"{'|510[ |n'}{'|224{name}|n |510]|n'}\n\n"
+        f"{'|510[ |n'}{'|224{name}{extra_name_info}|n |510]|n'}\n\n"
         '{desc}\n\n'
         f"{'|510[ |n'}{'|530Exits|n |510]|n'}\n"
         '{exits}\n'

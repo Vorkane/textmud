@@ -52,7 +52,7 @@ class CmdInventory(MuxCommand):
         wear_table = EvTable(border="header")
 
         carried = [obj for obj in items if not obj.db.worn]
-        names_and_descs = [(obj.get_display_name(self.caller), obj.get_display_desc(self.caller)) for obj in set(carried)]
+        names_and_descs = [(obj.get_extra_display_name_info(self.caller), obj.get_display_desc(self.caller)) for obj in set(carried)]
         carried_sums = {tup: names_and_descs.count(tup) for tup in set(names_and_descs)}
         worn = [obj for obj in items if obj.db.worn]
 
@@ -69,7 +69,7 @@ class CmdInventory(MuxCommand):
 
         # message_list.append("|wYou are wearing:|n")
         for item in worn:
-            item_name = item.get_display_name(self.caller)
+            item_name = item.get_extra_display_name_info(self.caller)
             if item.db.covered_by:
                 item_name += " (hidden)"
             wear_table.add_row(item_name, item.get_display_desc(self.caller))
@@ -91,9 +91,9 @@ Carrying:
 |015=================================|n""".format(
             current_weight="".join(str([self.caller.stats.ENC.current])),
             max_weight="".join(str([self.caller.stats.ENC.max])),
-            wielding="\n\t  ".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in wield_slots if self.caller.equip.get(slot)]),
-            armor="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in armor_slots if self.caller.equip.get(slot)]),
-            clothing="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in clothing_slots if self.caller.equip.get(slot)]),
+            wielding="\n\t  ".join([self.caller.equip.get(slot).get_extra_display_name_info(self.caller) for slot in wield_slots if self.caller.equip.get(slot)]),
+            armor="\n\t".join([self.caller.equip.get(slot).get_extra_display_name_info(self.caller) for slot in armor_slots if self.caller.equip.get(slot)]),
+            clothing="\n\t".join([self.caller.equip.get(slot).get_extra_display_name_info(self.caller) for slot in clothing_slots if self.caller.equip.get(slot)]),
             carrying=str(carry_table))
 
         message_list.append(inv_header)
@@ -140,14 +140,14 @@ class CmdEquip(MuxCommand):
                     elif any(isinstance(obj, i) for i in (Torso, Helm, Boots, Gloves, Necklace, Bracers, Belt, Ring)):
                         action = 'wear'
                     else:
-                        caller.msg("You can't equip {}.".format(obj.get_display_name(caller)))
+                        caller.msg("You can't equip {}.".format(obj.get_extra_display_name_info(caller)))
 
                 if not obj.access(caller, 'equip'):
-                    caller.msg("You can't {} {}.".format(action, obj.get_display_name(caller)))
+                    caller.msg("You can't {} {}.".format(action, obj.get_extra_display_name_info(caller)))
                     return
 
                 if obj in caller.equip:
-                    caller.msg("You're already {}ing {}.".format(action, obj.get_display_name(caller)))
+                    caller.msg("You're already {}ing {}.".format(action, obj.get_extra_display_name_info(caller)))
                     return
 
                 # check whether slots are occupied
@@ -158,7 +158,7 @@ class CmdEquip(MuxCommand):
                             for item in occupied_slots:
                                 caller.equip.remove(item)
                         else:
-                            caller.msg("You can't {} {}. ".format(action, obj.get_display_name(caller)) + "You already have something there.")
+                            caller.msg("You can't {} {}. ".format(action, obj.get_extra_display_name_info(caller)) + "You already have something there.")
                             return
                 else:
                     if len(occupied_slots) == len(obj.db.slots):
@@ -167,21 +167,21 @@ class CmdEquip(MuxCommand):
                         else:
                             caller.msg("You can't {} {}. ".format(
                                 action,
-                                obj.get_display_name(caller)) + "You have no open {} slot{}.".format(
+                                obj.get_extra_display_name_info(caller)) + "You have no open {} slot{}.".format(
                                 ", or ".join(obj.db.slots),
                                 "s" if len(obj.db.slots) != 1 else ""
                             ))
                             return
 
                 if not caller.equip.add(obj):
-                    caller.msg("You can't {} {}.".format(action, obj.get_display_name(caller)))
+                    caller.msg("You can't {} {}.".format(action, obj.get_extra_display_name_info(caller)))
                     return
 
                 # call hook
                 if hasattr(obj, "at_equip"):
                     obj.at_equip(caller)
 
-                caller.msg("You {} {}.".format(action, obj.get_display_name(caller)))
+                caller.msg("You {} {}.".format(action, obj.get_extra_display_name_info(caller)))
                 caller.location.msg_contents(
                     "{actor} {action}s {obj}.",
                     mapping=dict(actor=caller, obj=obj, action=action),
@@ -260,7 +260,7 @@ class CmdWear(MuxCommand):
                                action='wear')
         else:
             caller.msg("You can't wear {}.".format(
-                obj.get_display_name(caller)))
+                obj.get_extra_display_name_info(caller)))
 
 
 class CmdWield(MuxCommand):
@@ -297,7 +297,7 @@ class CmdWield(MuxCommand):
             caller.execute_cmd('equip', args=' '.join((sw, args)), item=obj, action='wield')
         else:
             caller.msg("You can't wield {}.".format(
-                obj.get_display_name(caller)))
+                obj.get_extra_display_name_info(caller)))
 
 
 class CmdRemove(MuxCommand):
@@ -337,7 +337,7 @@ class CmdRemove(MuxCommand):
             obj.at_remove(caller)
 
         caller.msg("You remove {}.".format(
-            obj.get_display_name(caller)))
+            obj.get_extra_display_name_info(caller)))
         caller.location.msg_contents(
             "{actor} removes {item}.",
             mapping=dict(actor=caller, item=obj),
