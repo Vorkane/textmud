@@ -133,6 +133,17 @@ class CopperOre(Ore):
         self.db.ore_type = "copper"
 
 
+class CopperIngot(Ore):
+
+    def at_object_creation(self):
+        super(CopperIngot, self).at_object_creation()
+        self.key = "copper ingot"
+        self.name = "copper ingot"
+        self.db.desc = "A piece of copper ore."
+        self.db.weight = 0.75
+        self.db.ore_type = "copper"  # You can change this to other ore type.
+
+
 class IronOre(Ore):
 
     def at_object_creation(self):

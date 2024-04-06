@@ -1,6 +1,26 @@
 from .crafting import SkillRecipe
 
 
+class SmeltCopperRecipe(SkillRecipe):
+    """
+    Smelting iron ore into ingots
+    """
+
+    skill = ('BLACKSMITH', 0)
+    exp_gain = 1
+
+    name = "copper ingot"
+    # tool_tags = ["furnace"]
+    consumable_tags = ["copper ore", "copper ore"]
+    output_prototypes = [
+        {
+            "prototype_parent": "COPPER_INGOT",
+            "name": "copper ingot",
+            "key": "copper ingot"
+        }
+    ]
+
+
 class SmeltIronRecipe(SkillRecipe):
     """
     Smelting iron ore into ingots
@@ -19,34 +39,3 @@ class SmeltIronRecipe(SkillRecipe):
             "key": "iron ingot"
         }
     ]
-
-
-class SmeltRecipe(SkillRecipe):
-    """
-    Smelting iron ore into ingots
-    """
-
-    skill = ('BLACKSMITH', 0)
-    exp_gain = 1
-
-    name = "ingot"
-    # tool_tags = ["furnace"]
-    consumable_tags = ["ore", "ore"]
-    output_prototypes = [
-        {
-            "prototype_parent": "IRON_INGOT",
-            "name": "iron ingot",
-            "key": "iron ingot"
-        }
-    ]
-    # output_prototypes = [
-    #     {
-    #         "key": "iron ingot",
-    #         "desc": "An ingot of iron.",
-    #         "tags": [
-    #             ("iron ingot", "crafting_material"),
-    #             ("ingot", "crafting_material"),
-    #         ],
-    #         "value": 5,
-    #     }
-    # ]

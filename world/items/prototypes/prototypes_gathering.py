@@ -9,7 +9,7 @@ from random import randint
 # Mineral Based Materials and Gather Nodes
 
 IRON_ORE_NODE = {
-    "typeclass": "world.items.mining.OreGatherNode",
+    "typeclass": "world.items.crafting.mining.OreGatherNode",
     "key": "iron vein",
     "desc": "An outcroppig of rocks appears to contain raw iron.",
     "spawn_proto": "IRON_ORE",
@@ -18,7 +18,7 @@ IRON_ORE_NODE = {
 }
 
 IRON_ORE = {
-    "typeclass": "world.items.mining.IronOre",
+    "typeclass": "world.items.crafting.mining.IronOre",
     "key": "iron ore",
     "desc": "A clump of raw iron ore.",
     "tags": [("iron ore", "crafting_material"), ("iron", "material"), ("ore", "crafting_material")],

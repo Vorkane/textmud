@@ -26,15 +26,15 @@ class Room(ContribRPRoom):
     allow_death = False
 
     appearance_template = (
-        '{header}'
-        f"{'|510[ |n'}{'|224{name}{extra_name_info}|n |510]|n'}\n\n"
-        '{desc}\n\n'
-        f"{'|510[ |n'}{'|530Exits|n |510]|n'}\n"
-        '{exits}\n'
-        '{things}\n'
-        '{characters}\n'
-        '{footer}'
-        '\n\n'
+        '|/{header}'
+        # f"{'|510[ |n'}{'|224{name}{extra_name_info}|n |510]|n'}|/"
+        f"{'|224{name}{extra_name_info}|n'}|/"
+        '{desc}|/'
+        f"{'|510[ |n'}{'|530Exits|n |510]|n'}|/"
+        '{exits}|/'
+        '{things}|/'
+        '{characters}|/'
+        '{footer}|/'
     )
 
     # appearance_template = """

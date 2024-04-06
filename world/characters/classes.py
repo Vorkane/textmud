@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class CharacterClass:
     key: str
@@ -8,7 +9,7 @@ class CharacterClass:
 
     def __str__(self):
         return self.name
-    
+
 
 class CharacterClasses:
     _cached_dict = None
