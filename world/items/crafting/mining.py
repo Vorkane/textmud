@@ -100,7 +100,7 @@ class Ore(Item):
 class CopperOreNode(OreNode):
 
     def at_object_creation(self):
-        super(IronOreNode, self).at_object_creation()
+        super(CopperOreNode, self).at_object_creation()
         self.key = "copper node"
         self.name = "|Ocopper node|n"
         self.db.desc = "A copper node sits here."

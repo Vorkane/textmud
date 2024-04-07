@@ -6,7 +6,8 @@ from evennia.objects.models import ObjectDB
 from evennia.utils.evmenu import EvMenu
 from evennia.utils import dedent
 
-from typeclasses.characters import Character
+# from typeclasses.characters import Character
+from typeclasses.characters import Player
 # from world.characters.races import Races
 
 from .rules import dice
@@ -135,7 +136,7 @@ class TemporaryCharacterSheet:
 
         # creating character with given abilities
         new_character = create_object(
-            Character,
+            Player,
             key=self.name,
             location=start_location,
             home=default_home,

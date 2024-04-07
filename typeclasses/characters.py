@@ -7,11 +7,13 @@ is setup to be the "default" character type created by the default
 creation commands.
 
 """
-from evennia.objects.objects import DefaultCharacter
+# from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import lazy_property
 from evennia.contrib.rpg.traits import TraitHandler
 from evennia.server.sessionhandler import SESSIONS
+from evennia.contrib.tutorials.evadventure import rules
+from evennia import DefaultCharacter
 
 
 from world.equip import EquipHandler
@@ -35,6 +37,9 @@ stats = {
     'ENC': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Carry Weight'},
     'LV': {'trait_type': 'static', 'base': 1, 'mod': 0, 'max': 999, 'name': 'Level'},
     'XP': {'trait_type': 'counter', 'base': 0, 'mod': 0, 'name': 'Experience', 'extra': {'level_boundaries': (500, 2000, 4500, 'unlimited')}},
+    # Combat
+    'PATK': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Physical Attack'},
+    'PDEF': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Physical Defense'},
 }
 
 wield_slots = ['wield1', 'wield2']
@@ -51,15 +56,22 @@ skills = {
 
 
 class LivingMixin:
+    """
+    Mixin class to use for all living things.
+
+    """
 
     is_pc = False
 
     @property
     def hurt_level(self):
+        """
+        String describing how hurt this character is.
+        """
         percent = max(0, min(100, 100 * (self.stats.HP.current / self.stats.HP.max)))
         if 95 < percent <= 100:
-            return '|gPerfect|n'
-        if 80 < percent <= 95:
+            return "|gPerfect|n"
+        elif 80 < percent <= 95:
             return "|gScraped|n"
         elif 60 < percent <= 80:
             return "|GBruised|n"
@@ -74,16 +86,114 @@ class LivingMixin:
         elif percent == 0:
             return "|RCollapsed!|n"
 
-    def heal(self, hp):
+    def heal(self, hp, healer=None):
         """
-        Heal hp amount of health, not allowng to exceed our max hp
+        Heal by a certain amount of HP.
+
         """
         damage = self.stats.HP.max - self.stats.HP.current
         healed = min(damage, hp)
         self.stats.HP.current += healed
 
+        if healer is self:
+            self.msg(f"|gYou heal yourself for {healed} health.|n")
+        elif healer:
+            self.msg(f"|g{healer.key} heals you for {healed} health.|n")
+        else:
+            self.msg(f"You are healed for {healed} health.")
 
-class Character(LivingMixin, DefaultCharacter):
+    def at_attacked(self, attacker, **kwargs):
+        """
+        Called when being attacked / combat starts.
+
+        """
+        pass
+
+    def at_damage(self, damage, attacker=None):
+        """
+        Called when attacked and taking damage.
+
+        """
+        self.self.stats.HP.current -= damage
+
+    def at_defeat(self):
+        """
+        Called when this living thing reaches HP 0.
+
+        """
+        # by default, defeat means death
+        self.at_death()
+
+    def at_death(self):
+        """
+        Called when this living thing dies.
+
+        """
+        pass
+
+    def at_pay(self, amount):
+        """
+        Get coins, but no more than we actually have.
+
+        """
+        amount = min(amount, self.coins)
+        self.coins -= amount
+        return amount
+
+    def at_looted(self, looter):
+        """
+        Called when being looted (after defeat).
+
+        Args:
+            looter (Object): The one doing the looting.
+
+        """
+        max_steal = rules.dice.roll("1d10")
+        stolen = self.at_pay(max_steal)
+
+        looter.coins += stolen
+
+        self.location.msg_contents(
+            f"$You(looter) loots $You() for {stolen} coins!",
+            from_obj=self,
+            mapping={"looter": looter},
+        )
+
+    def pre_loot(self, defeated_enemy):
+        """
+        Called just before looting an enemy.
+
+        Args:
+            defeated_enemy (Object): The enemy soon to loot.
+
+        Returns:
+            bool: If False, no looting is allowed.
+
+        """
+        pass
+
+    def at_do_loot(self, defeated_enemy):
+        """
+        Called when looting another entity.
+
+        Args:
+            defeated_enemy: The thing to loot.
+
+        """
+        defeated_enemy.at_looted(self)
+
+    def post_loot(self, defeated_enemy):
+        """
+        Called just after having looted an enemy.
+
+        Args:
+            defeated_enemy (Object): The enemy just looted.
+
+        """
+        pass
+
+
+class Character(DefaultCharacter):
     """
     The Character defaults to reimplementing some of base Object's hook methods with the
     following functionality:
@@ -248,8 +358,6 @@ class Character(LivingMixin, DefaultCharacter):
         self.stats.XP.total = 0
         self.stats.ENC.max = self.stats.STR.lift_factor * self.stats.STR
 
-        self.tags.add("pcs", category="group")
-
     def at_post_puppet(self):
         # self.location.msg_contents("%s has connected" % self.key)
         loginmsg = "\n\n[************--Rumour Monger--************]|/" \
@@ -317,19 +425,73 @@ class Character(LivingMixin, DefaultCharacter):
     race = AttributeProperty()
 
 
-class Player(Character):
+class Player(LivingMixin, Character):
 
     is_pc = True
 
-    pass
+    # def at_object_creation(self):
+
+    #     super(Player, self).at_object_creation()
+    #     self.tags.add("player", category="group")
 
 
-class NPC(Character):
+class NPC(LivingMixin, Character):
 
     is_pc = False
 
+    # hit_dice = AttributeProperty(default=1, autocreate=False)
+    armor = AttributeProperty(default=1, autocreate=False)  # +10 to get armor defense
+    morale = AttributeProperty(default=9, autocreate=False)
+    # hp_multiplier = AttributeProperty(default=4, autocreate=False)  # 4 default in Knave
+    hp = AttributeProperty(default=None, autocreate=False)  # internal tracking, use .hp property
+    hitD = AttributeProperty(default=None, autocreate=False)
+    stats_info = {}
+    hit_dice = 1
+    hp_multiplier = 1
+    hp_max = AttributeProperty(default=None, autocreate=False)
+
+    @property
+    def hurt_level(self):
+        """
+        String describing how hurt this character is.
+        """
+        # percent = max(0, min(100, 100 * (self.hp / self.hp_max)))
+        percent = max(0, min(100, 100 * (self.stats.HP.current / self.stats.HP.max)))
+        if 95 < percent <= 100:
+            return "|gPerfect|n"
+        elif 80 < percent <= 95:
+            return "|gScraped|n"
+        elif 60 < percent <= 80:
+            return "|GBruised|n"
+        elif 45 < percent <= 60:
+            return "|yHurt|n"
+        elif 30 < percent <= 45:
+            return "|yWounded|n"
+        elif 15 < percent <= 30:
+            return "|rBadly wounded|n"
+        elif 1 < percent <= 15:
+            return "|rBarely hanging on|n"
+        elif percent == 0:
+            return "|RCollapsed!|n"
+
+    # @property
+    # def hp_max(self):
+    #     return self.hit_dice * self.hp_multiplier
+
     def at_object_creation(self):
+        """
+        Start with max health.
+
+        """
+
+        print(f"Hit Die: {self.hp_max}")
+
+        super(NPC, self).at_object_creation()
+
+        self.stats.HP.max = self.hp_max
+
         self.stats.HP.current = self.stats.HP.max
+
         self.tags.add("npcs", category="group")
 
 

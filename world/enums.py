@@ -30,12 +30,6 @@ class Ability(Enum):
     MAG = "magic"
     LUK = "luck"
 
-    
-    CON = "constitution"
-    INT = "intelligence"
-    WIS = "wisdom"
-    CHA = "charisma"
-
     ARMOR = "armor"
 
     CRITICAL_FAILURE = "critical_failure"
@@ -44,6 +38,7 @@ class Ability(Enum):
     ALLEGIANCE_HOSTILE = "hostile"
     ALLEGIANCE_NEUTRAL = "neutral"
     ALLEGIANCE_FRIENDLY = "friendly"
+
 
 class ObjResources(Enum):
     iron = "Iron"
@@ -81,6 +76,7 @@ class ObjType(Enum):
     QUEST = "quest"
     TREASURE = "treasure"
 
+
 class ObjAttributes(Enum):
     """
     Object Attributes
@@ -92,8 +88,8 @@ class CombatRange(Enum):
     """
     Maximum combat range values
     """
-    MELEE   = 1
-    REACH   = 2
-    SHORT   = 3
-    MEDIUM  = 4
-    RANGED  = 6
+    MELEE = 1
+    REACH = 2
+    SHORT = 3
+    MEDIUM = 4
+    RANGED = 6

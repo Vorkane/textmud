@@ -25,27 +25,15 @@ class Room(ContribRPRoom):
     allow_pvp = False
     allow_death = False
 
-    appearance_template = (
-        '|/{header}'
-        # f"{'|510[ |n'}{'|224{name}{extra_name_info}|n |510]|n'}|/"
-        f"{'|224{name}{extra_name_info}|n'}|/"
-        '{desc}|/'
-        f"{'|510[ |n'}{'|530Exits|n |510]|n'}|/"
-        '{exits}|/'
-        '{things}|/'
-        '{characters}|/'
-        '{footer}|/'
-    )
-
-    # appearance_template = """
-    # {header}
-    # |502{name}|n
-    # {desc}
-    # {exits}{characters}{things}
-    # {footer}
-    # """
-
-    # pass
+    appearance_template = """
+|/{header}
+|510[ |224{name}{extra_name_info} |510]|n
+{desc}|/
+|510[ |224Exits |510]|n|/{exits}
+{characters}
+{things}
+{footer}|/
+    """
 
 
 """

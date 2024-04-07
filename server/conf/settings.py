@@ -144,7 +144,7 @@ DATABASES = {
 PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes', 'world.items.prototypes.prototypes_gathering',
                       'world.items.prototypes.prototypes_crafting', 'world.items.prototypes.prototypes_tools',
                       'world.items.prototypes.prototypes_containers', 'world.items.prototypes.prototypes_fountains',
-                      'world.items.prototypes.prototypes_gear']
+                      'world.items.prototypes.prototypes_gear', 'world.mobs.prototypes_mobs', 'world.items.prototypes.prototypes_melee_weapons']
 
 CRAFT_RECIPE_MODULES = ['core.crafting.blacksmithing']
 

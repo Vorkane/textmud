@@ -40,6 +40,7 @@ from commands.ooc.wiki import CmdWiki
 from .building.building import EditCmd
 from evennia.contrib.grid.xyzgrid.commands import XYZGridCmdSet
 from core.crafting.crafting import CmdCraftNew
+from core.combat.combat_turnbased import TurnCombatCmdSet
 
 
 def check_errors(func):
@@ -99,6 +100,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(sittables.CmdStand2)
         self.add(CmdFill())
         self.add(CmdWiki())
+        self.add(TurnCombatCmdSet)
         # self.add(ContainerCmdSet)
 
         #
