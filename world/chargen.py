@@ -163,6 +163,8 @@ class TemporaryCharacterSheet:
 
         new_character.stats.ST.max = int(10 + new_character.stats.END.base * 0.5)
         new_character.stats.ST.current = int(new_character.stats.ST.max)
+        new_character.stats.LV.current = 1
+        new_character.stats.LV.actual = 1
 
         new_character.locks.add(
             "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"

@@ -55,7 +55,7 @@ class CmdStatus(DanMachiCommand):
         _CHAR_STATUS = (
             f"\n\n"
             f"{'< Details >':=^80}\n"
-            f"{'|CName:|w':10}{self.caller.name:20}{'|CLevel:|w':12}{self.caller.stats.LV.actual:<20}|n\n"
+            f"{'|CName:|w':10}{self.caller.name:20}{'|CLevel:|w':12}{self.caller.stats.LV.current:<20}|n\n"
             f"{'|CRace:|w':10}{self.caller.race:20}{'|CGender:|w':12}Male{'':16}|n\n"
             f"{'< Vitals >':=^80}\n"
             f"{'|CHealth:|w':<12}{self.caller.stats.HP.current}{'|W('}{self.caller.stats.HP.max}{')|n':<10}{'|CMana:|w':<10}{self.caller.stats.MP.current}{'|W('}{self.caller.stats.MP.max}{')|n':<10}{'|CStamina:|w':<13}{(2 / self.caller.stats.ST.max) * 100}%{'|n':<5}\n"
@@ -64,7 +64,7 @@ class CmdStatus(DanMachiCommand):
             f"{'|CAgility:|w':<20}{self.caller.stats.AGI.base:<20}\n{'|CMagic:|w':<20}{self.caller.stats.MAG.base:<20}\n{'|CLuck:|w':<20}{self.caller.stats.LUK.base:<20}|n\n"
             f"{'< Status >':=^80}\n"
             f"{'|RSkill|w':<20}{'|RLevel|w':<14}{'|RXP|w':<14}|n\n"
-            f"{'|CBlacksmithing|w':<20}{self.caller.skills.BLACKSMITH.base:<10}{(self.caller.skills.BLACKSMITH.xptnl - self.caller.skills.BLACKSMITH.xp):<10}|n\n\n"
+            f"{'|CBlacksmithing|w':<20}{self.caller.skills.BLACKSMITHING.base:<10}{(self.caller.skills.BLACKSMITHING.xptnl - self.caller.skills.BLACKSMITHING.xp):<10}|n\n\n"
             # f"{''.join([key.name(self.caller) for key in self.caller.skills.items()])}"
 
             f"{'You have earned a total of '}{self.caller.stats.XP.total}{' experience.'}\n"
