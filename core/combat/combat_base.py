@@ -117,9 +117,12 @@ class CombatActionAttack(CombatAction):
             }
     """
 
+    # self.caller.equip.get('wield1').get_display_name(self.caller) if callable(getattr(self.caller.equip.get('wield1'), 'get_display_name', False)) else "Empty"
+
     def execute(self):
         attacker = self.combatant
-        weapon = attacker.weapon
+        # weapon = attacker.weapon
+        weapon = attacker.equip.get('wield1')
         target = self.target
 
         if weapon.at_pre_use(attacker, target):

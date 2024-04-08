@@ -11,6 +11,9 @@ IRON_SHORTSWORD = {
     "damage_roll": "1d6",
     "range": "melee",
     "handedness": 1,
+    "curr_dura": 20,
+    "max_dura": 20,
+    "attack_type": "slashing",
     "slots": ['wield1']
 
 }

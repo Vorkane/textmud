@@ -1,5 +1,8 @@
 {
     "python.analysis.extraPaths": [
         "U:\\evennia\\evennia\\evennia"
+    ],
+    "black-formatter.args": [
+        "--line-length", "88"
     ]
 }

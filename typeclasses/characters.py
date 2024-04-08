@@ -14,9 +14,10 @@ from evennia.contrib.rpg.traits import TraitHandler
 from evennia.server.sessionhandler import SESSIONS
 from evennia.contrib.tutorials.evadventure import rules
 from evennia import DefaultCharacter
-
+import random
 
 from world.equip import EquipHandler
+from world.rules import Ability
 
 
 stats = {
@@ -429,26 +430,27 @@ class Player(LivingMixin, Character):
 
     is_pc = True
 
-    # def at_object_creation(self):
-
-    #     super(Player, self).at_object_creation()
-    #     self.tags.add("player", category="group")
+    def at_object_creation(self):
+        super(Player, self).at_object_creation()
+        self.tags.add("player", category="group")
 
 
 class NPC(LivingMixin, Character):
 
     is_pc = False
 
-    # hit_dice = AttributeProperty(default=1, autocreate=False)
-    armor = AttributeProperty(default=1, autocreate=False)  # +10 to get armor defense
-    morale = AttributeProperty(default=9, autocreate=False)
-    # hp_multiplier = AttributeProperty(default=4, autocreate=False)  # 4 default in Knave
-    hp = AttributeProperty(default=None, autocreate=False)  # internal tracking, use .hp property
-    hitD = AttributeProperty(default=None, autocreate=False)
-    stats_info = {}
-    hit_dice = 1
-    hp_multiplier = 1
-    hp_max = AttributeProperty(default=None, autocreate=False)
+    hp_max = AttributeProperty(default=1, autocreate=False)
+
+    # # hit_dice = AttributeProperty(default=1, autocreate=False)
+    # armor = AttributeProperty(default=1, autocreate=False)  # +10 to get armor defense
+    # morale = AttributeProperty(default=9, autocreate=False)
+    # # hp_multiplier = AttributeProperty(default=4, autocreate=False)  # 4 default in Knave
+    # hp = AttributeProperty(default=None, autocreate=False)  # internal tracking, use .hp property
+    # hitD = AttributeProperty(default=None, autocreate=False)
+    # stats_info = {}
+    # hit_dice = 1
+    # hp_multiplier = 1
+    # hp_max = 0
 
     @property
     def hurt_level(self):
@@ -474,26 +476,121 @@ class NPC(LivingMixin, Character):
         elif percent == 0:
             return "|RCollapsed!|n"
 
-    # @property
-    # def hp_max(self):
-    #     return self.hit_dice * self.hp_multiplier
+    def basetype_posthook_setup(self):
 
-    def at_object_creation(self):
-        """
-        Start with max health.
-
-        """
-
-        print(f"Hit Die: {self.hp_max}")
-
-        super(NPC, self).at_object_creation()
+        print(f"Hitpoints: {self.hp_max}")
 
         self.stats.HP.max = self.hp_max
-
         self.stats.HP.current = self.stats.HP.max
+
+    def at_object_creation(self):
+        super(NPC, self).at_object_creation()
 
         self.tags.add("npcs", category="group")
 
 
 class Mob(NPC):
-    pass
+    """
+    Mob (mobile) NPC; this is usually an enemy.
+
+    """
+
+    # change this to make the mob more or less likely to perform different actions
+    combat_probabilities = {
+        "hold": 0.0,
+        "attack": 0.85,
+        "stunt": 0.05,
+        "item": 0.0,
+        "flee": 0.05,
+    }
+
+    # @lazy_property
+    # def ai(self):
+    #     return AIHandler(self)
+
+    def ai_idle(self):
+        """
+        Do nothing.
+
+        """
+        pass
+
+    def ai_combat(self):
+        """
+        Manage the combat/combat state of the mob.
+
+        """
+        if combathandler := self.nbd.combathandler:
+            # already in combat
+            allies, enemies = combathandler.get_sides(self)
+            action = self.ai.random_probability(self.combat_probabilities)
+
+            match action:
+                case "hold":
+                    combathandler.queue_action({"key": "hold"})
+                case "combat":
+                    combathandler.queue_action({"key": "attack", "target": random.choice(enemies)})
+                case "stunt":
+                    # choose a random ally to help
+                    combathandler.queue_action(
+                        {
+                            "key": "stunt",
+                            "recipient": random.choice(allies),
+                            "advantage": True,
+                            "stunt": Ability.STR,
+                            "defense": Ability.DEX,
+                        }
+                    )
+                case "item":
+                    # use a random item on a random ally
+                    target = random.choice(allies)
+                    valid_items = [item for item in self.contents if item.at_pre_use(self, target)]
+                    combathandler.queue_action(
+                        {"key": "item", "item": random.choice(valid_items), "target": target}
+                    )
+                case "flee":
+                    self.ai.set_state("flee")
+
+        elif not (targets := self.ai.get_targets()):
+            self.ai.set_state("roam")
+        else:
+            target = random.choice(targets)
+            self.execute_cmd(f"attack {target.key}")
+
+    def ai_roam(self):
+        """
+        roam, moving randomly to a new room. If a target is found, switch to combat state.
+
+        """
+        if targets := self.ai.get_targets():
+            self.ai.set_state("combat")
+            self.execute_cmd(f"attack {random.choice(targets).key}")
+        else:
+            exits = self.ai.get_traversable_exits()
+            if exits:
+                exi = random.choice(exits)
+                self.execute_cmd(f"{exi.key}")
+
+    def ai_flee(self):
+        """
+        Flee from the current room, avoiding going back to the room from which we came. If no exits
+        are found, switch to roam state.
+
+        """
+        current_room = self.location
+        past_room = self.attributes.get("past_room", category="ai_state", default=None)
+        exits = self.ai.get_traversable_exits(exclude_destination=past_room)
+        if exits:
+            self.attributes.set("past_room", current_room, category="ai_state")
+            exi = random.choice(exits)
+            self.execute_cmd(f"{exi.key}")
+        else:
+            # if in a dead end, roam will allow for backing out
+            self.ai.set_state("roam")
+
+    def at_defeat(self):
+        """
+        Mobs die right away when defeated, no death-table rolls.
+
+        """
+        self.at_death()

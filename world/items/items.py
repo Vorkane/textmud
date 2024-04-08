@@ -3,6 +3,7 @@ from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 from evennia.contrib.game_systems.containers import ContribContainer
 from world.rulebook import item_durability
 from evennia.utils.evform import EvForm
+from evennia.utils.utils import make_iter
 
 
 class Item(ContribRPObject):
@@ -136,6 +137,44 @@ class Equippable(Item):
         if self in dropper.equip:
             dropper.equip.remove(self)
             self.at_remove(dropper)
+
+    def has_obj_type(self, objtype):
+        """
+        Check if object is of a particular type.
+
+        typeobj_enum (enum.ObjType): A type to check, like enums.TypeObj.TREASURE.
+
+        """
+        return objtype.value in make_iter(self.obj_type)
+
+    def get_help(self):
+        """
+        Get help text for the item.
+
+        Returns:
+            str: The help text, by default taken from the `.help_text` property.
+
+        """
+        return "No help for this item."
+
+    def at_pre_use(self, *args, **kwargs):
+        """
+        Called before use. If returning False, usage should be aborted.
+        """
+        return True
+
+    def use(self, *args, **kwargs):
+        """
+        Use this object, whatever that may mean.
+
+        """
+        raise NotImplementedError
+
+    def at_post_use(self, *args, **kwargs):
+        """
+        Called after use happened.
+        """
+        pass
 
 
 class ObjContainer(ContribContainer):

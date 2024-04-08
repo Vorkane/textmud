@@ -323,7 +323,7 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 
         # check if anyone is defeated
         for combatant in list(self.combatants.keys()):
-            if combatant.hp <= 0:
+            if combatant.stats.HP.current <= 0:
                 # PCs roll on the death table here, NPCs die. Even if PCs survive, they
                 # are still out of the fight.
                 combatant.at_defeat()
@@ -352,8 +352,8 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         if not enemies:
             # if one way or another, there are no more enemies to fight
             still_standing = list_to_string(f"$You({comb.key})" for comb in allies)
-            knocked_out = list_to_string(comb for comb in self.defeated_combatants if comb.hp > 0)
-            killed = list_to_string(comb for comb in self.defeated_combatants if comb.hp <= 0)
+            knocked_out = list_to_string(comb for comb in self.defeated_combatants if comb.stats.HP.current > 0)
+            killed = list_to_string(comb for comb in self.defeated_combatants if comb.stats.HP.current <= 0)
 
             if still_standing:
                 txt = [f"The combat is over. {still_standing} are still standing."]
@@ -798,11 +798,11 @@ class CmdTurnAttack(Command):
         target = self.caller.search(self.args)
         if not target:
             return
-
-        if not hasattr(target, "hp"):
+        if not hasattr(target.stats, 'HP'):
             self.msg("You can't attack that.")
             return
-        elif target.hp <= 0:
+        # elif target.hp <= 0:
+        elif target.stats.HP.current <= 0:
             self.msg(f"{target.get_display_name(self.caller)} is already down.")
             return
 
