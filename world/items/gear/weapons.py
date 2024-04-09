@@ -30,14 +30,18 @@ class Weapon(Equippable):
         self.db.damage_roll = self.damage_roll
         self.db.handedness = self.handedness
         self.db.worn = False
+        self.db.curr_dura = self.curr_dura
+        self.db.max_dura = self.max_dura
 
     def at_equip(self, character):
         self.db.worn = True
+        character.db.damage_roll = self.db.damage_roll
         # character.traits.PDEF.mod += self.db.physical_bonus
         # character.traits.MDEF.mod += self.db.magical_bonus
 
     def at_remove(self, character):
         self.db.worn = False
+        character.db.damage_roll = "1d2"
         # character.traits.PDEF.mod -= self.db.physical_bonus
         # character.traits.MDEF.mod -= self.db.magical_bonus
 
@@ -62,8 +66,8 @@ class Weapon(Equippable):
         is_hit, quality, txt = rules.dice.opposed_saving_throw(
             attacker,
             target,
-            attack_type=self.attack_type,
-            defense_type=self.defense_type,
+            # attack_type=self.attack_type,
+            # defense_type=self.defense_type,
             advantage=advantage,
             disadvantage=disadvantage,
         )
@@ -74,11 +78,11 @@ class Weapon(Equippable):
         )
         if is_hit:
             # enemy hit, calculate damage
-            dmg = rules.dice.roll(self.damage_roll)
+            dmg = rules.dice.roll(self.db.damage_roll)
 
             if quality is Ability.CRITICAL_SUCCESS:
                 # doble damage roll for critical success
-                dmg += rules.dice.roll(self.damage_roll)
+                dmg += rules.dice.roll(self.db.damage_roll)
                 message = f" $You() |ycritically|n $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
             else:
                 message = f" $You() $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
@@ -94,14 +98,14 @@ class Weapon(Equippable):
             message = f" $You() $conj(miss) $You({target.key})."
             if quality is Ability.CRITICAL_FAILURE:
                 message += ".. it's a |rcritical miss!|n, damaging the weapon."
-                if self.quality is not None:
-                    self.quality -= 1
+                if self.db.curr_dura is not None:
+                    self.db.curr_dura -= 1
                 location.msg_contents(
                     message, from_obj=attacker, mapping={target.key: target}
                 )
 
     def at_post_use(self, user, *args, **kwargs):
-        if self.quality is not None and self.quality <= 0:
+        if self.db.curr_dura is not None and self.db.curr_dura <= 0:
             user.msg(
                 f"|r{self.get_display_name(user)} breaks and can no longer be used!"
             )

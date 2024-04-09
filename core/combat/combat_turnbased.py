@@ -246,7 +246,11 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
             enemies = [comb for comb in self.combatants if comb != combatant]
         else:
             # otherwise, enemies/allies depend on who combatant is
-            pcs = [comb for comb in self.combatants if inherits_from(comb, EvAdventureCharacter)]
+            pcs = [
+                comb
+                for comb in self.combatants
+                if inherits_from(comb, EvAdventureCharacter)
+            ]
             npcs = [comb for comb in self.combatants if comb not in pcs]
             if combatant in pcs:
                 # combatant is a PC, so NPCs are all enemies
@@ -329,14 +333,20 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
                 combatant.at_defeat()
                 self.combatants.pop(combatant)
                 self.defeated_combatants.append(combatant)
-                self.msg("|r$You() $conj(fall) to the ground, defeated.|n", combatant=combatant)
+                self.msg(
+                    "|r$You() $conj(fall) to the ground, defeated.|n",
+                    combatant=combatant,
+                )
 
         # check if anyone managed to flee
         flee_timeout = self.flee_timeout
         for combatant, started_fleeing in self.fleeing_combatants.items():
             if self.turn - started_fleeing >= flee_timeout - 1:
                 # if they are still alive/fleeing and have been fleeing long enough, escape
-                self.msg("|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
+                self.msg(
+                    "|y$You() successfully $conj(flee) from combat.|n",
+                    combatant=combatant,
+                )
                 self.remove_combatant(combatant)
 
         # check if one side won the battle
@@ -352,8 +362,12 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         if not enemies:
             # if one way or another, there are no more enemies to fight
             still_standing = list_to_string(f"$You({comb.key})" for comb in allies)
-            knocked_out = list_to_string(comb for comb in self.defeated_combatants if comb.stats.HP.current > 0)
-            killed = list_to_string(comb for comb in self.defeated_combatants if comb.stats.HP.current <= 0)
+            knocked_out = list_to_string(
+                comb for comb in self.defeated_combatants if comb.stats.HP.current > 0
+            )
+            killed = list_to_string(
+                comb for comb in self.defeated_combatants if comb.stats.HP.current <= 0
+            )
 
             if still_standing:
                 txt = [f"The combat is over. {still_standing} are still standing."]
@@ -397,7 +411,13 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 # -----------------------------------------------------------------------------------
 
 
-def _get_combathandler(caller, turn_timeout=30, flee_time=3, combathandler_key="combathandler"):
+def _get_combathandler(
+    # caller, turn_timeout=30, flee_time=3, combathandler_key="combathandler"
+    caller,
+    turn_timeout=10,
+    flee_time=3,
+    combathandler_key="combathandler",
+):
     """
     Get the combat handler for the caller's location. If it doesn't exist, create it.
 
@@ -607,7 +627,10 @@ def node_choose_ability(caller, raw_string, **kwargs):
                 {
                     **kwargs,
                     **{
-                        "action_dict": {**action_dict, **{"stunt_type": abi, "defense_type": abi}},
+                        "action_dict": {
+                            **action_dict,
+                            **{"stunt_type": abi, "defense_type": abi},
+                        },
                     },
                 },
             ),
@@ -783,7 +806,7 @@ class CmdTurnAttack(Command):
     key = "attack"
     aliases = ["hit", "turnbased combat"]
 
-    turn_timeout = 30  # seconds
+    turn_timeout = 10  # seconds
     flee_time = 3  # rounds
 
     def parse(self):
@@ -798,7 +821,7 @@ class CmdTurnAttack(Command):
         target = self.caller.search(self.args)
         if not target:
             return
-        if not hasattr(target.stats, 'HP'):
+        if not hasattr(target.stats, "HP"):
             self.msg("You can't attack that.")
             return
         # elif target.hp <= 0:
@@ -810,13 +833,17 @@ class CmdTurnAttack(Command):
             self.msg("PvP combat is not allowed here!")
             return
 
-        combathandler = _get_combathandler(self.caller, self.turn_timeout, self.flee_time)
+        combathandler = _get_combathandler(
+            self.caller, self.turn_timeout, self.flee_time
+        )
 
         # add combatants to combathandler. this can be done safely over and over
         combathandler.add_combatant(self.caller)
         combathandler.queue_action(self.caller, {"key": "attack", "target": target})
         combathandler.add_combatant(target)
-        target.msg("|rYou are attacked by {self.caller.get_display_name(self.caller)}!|n")
+        target.msg(
+            "|rYou are attacked by {self.caller.get_display_name(self.caller)}!|n"
+        )
         combathandler.start_combat()
 
         # build and start the menu

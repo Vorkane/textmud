@@ -7,6 +7,7 @@ is setup to be the "default" character type created by the default
 creation commands.
 
 """
+
 # from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import lazy_property
@@ -18,38 +19,91 @@ import random
 
 from world.equip import EquipHandler
 from world.rules import Ability
+from core.misc.ai import AIHandler
 
 
 stats = {
     # Primary
-    'STR': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Strength'},
-    'END': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Endurance'},
-    'DEX': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Dexterity'},
-    'AGI': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Agility'},
-    'MAG': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Magic'},
-    'LUK': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Luck'},
+    "STR": {"trait_type": "static", "base": 8, "mod": 0, "name": "Strength"},
+    "END": {"trait_type": "static", "base": 8, "mod": 0, "name": "Endurance"},
+    "DEX": {"trait_type": "static", "base": 8, "mod": 0, "name": "Dexterity"},
+    "AGI": {"trait_type": "static", "base": 8, "mod": 0, "name": "Agility"},
+    "MAG": {"trait_type": "static", "base": 8, "mod": 0, "name": "Magic"},
+    "LUK": {"trait_type": "static", "base": 8, "mod": 0, "name": "Luck"},
     # Vitals
-    'HP': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Health'},
-    'MP': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Mana'},
-    'ST': {'trait_type': 'static', 'base': 8, 'mod': 0, 'name': 'Stamina'},
-    'Thirst': {'trait_type': 'static', 'base': 100, 'max': 100, 'name': 'Thirst'},
-    'Hunger': {'trait_type': 'static', 'base': 100, 'max': 100, 'name': 'Hunger'},
+    "HP": {"trait_type": "static", "base": 8, "mod": 0, "name": "Health"},
+    "MP": {"trait_type": "static", "base": 8, "mod": 0, "name": "Mana"},
+    "ST": {"trait_type": "static", "base": 8, "mod": 0, "name": "Stamina"},
+    "Thirst": {"trait_type": "static", "base": 100, "max": 100, "name": "Thirst"},
+    "Hunger": {"trait_type": "static", "base": 100, "max": 100, "name": "Hunger"},
     # Misc
-    'ENC': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Carry Weight'},
-    'LV': {'trait_type': 'static', 'base': 1, 'mod': 0, 'max': 999, 'name': 'Level'},
-    'XP': {'trait_type': 'counter', 'base': 0, 'mod': 0, 'name': 'Experience', 'extra': {'level_boundaries': (500, 2000, 4500, 'unlimited')}},
+    "ENC": {
+        "trait_type": "static",
+        "base": 0,
+        "mod": 0,
+        "min": 0,
+        "name": "Carry Weight",
+    },
+    "LV": {"trait_type": "static", "base": 1, "mod": 0, "max": 999, "name": "Level"},
+    "XP": {
+        "trait_type": "counter",
+        "base": 0,
+        "mod": 0,
+        "name": "Experience",
+        "extra": {"level_boundaries": (500, 2000, 4500, "unlimited")},
+    },
     # Combat
-    'PATK': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Physical Attack'},
-    'PDEF': {'trait_type': 'static', 'base': 0, 'mod': 0, 'min': 0, 'name': 'Physical Defense'},
+    "PATK": {
+        "trait_type": "static",
+        "base": 0,
+        "mod": 0,
+        "min": 0,
+        "name": "Physical Attack",
+    },
+    "PDEF": {
+        "trait_type": "static",
+        "base": 0,
+        "mod": 0,
+        "min": 0,
+        "name": "Physical Defense",
+    },
 }
 
-wield_slots = ['wield1', 'wield2']
-armor_slots = ['helm', 'neck', 'cloak', 'torso', 'belt', 'bracers', 'gloves', 'ring1', 'ring2', 'boots']
-clothing_slots = ['hat', 'accessory', 'overtop', 'bottom', 'belt2', 'accessory2', 'gloves2', 'accessory3', 'accessory4', 'shoes']
+wield_slots = ["wield1", "wield2"]
+armor_slots = [
+    "helm",
+    "neck",
+    "cloak",
+    "torso",
+    "belt",
+    "bracers",
+    "gloves",
+    "ring1",
+    "ring2",
+    "boots",
+]
+clothing_slots = [
+    "hat",
+    "accessory",
+    "overtop",
+    "bottom",
+    "belt2",
+    "accessory2",
+    "gloves2",
+    "accessory3",
+    "accessory4",
+    "shoes",
+]
 
 
 skills = {
-    'BLACKSMITHING': {'trait_type': 'static', 'base': 0, 'xp': 0, 'xptnl': 100, 'name': 'Blacksmithing'},
+    "BLACKSMITHING": {
+        "trait_type": "static",
+        "base": 0,
+        "xp": 0,
+        "xptnl": 100,
+        "name": "Blacksmithing",
+    },
 }
 
 # self.skills.add("hunting", "Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
@@ -115,7 +169,7 @@ class LivingMixin:
         Called when attacked and taking damage.
 
         """
-        self.self.stats.HP.current -= damage
+        self.stats.HP.current -= damage
 
     def at_defeat(self):
         """
@@ -270,16 +324,22 @@ class Character(DefaultCharacter):
             string = "{object} leaves {exit}."
 
         location = self.location
-        exits = [o for o in location.contents if o.location is location and o.destination is destination]
+        exits = [
+            o
+            for o in location.contents
+            if o.location is location and o.destination is destination
+        ]
         if not mapping:
             mapping = {}
 
-        mapping.update({
-            "object": self,
-            "exit": exits[0] if exits else "somwhere",
-            "origin": location or "nowhere",
-            "destination": destination or "nowhere",
-        })
+        mapping.update(
+            {
+                "object": self,
+                "exit": exits[0] if exits else "somwhere",
+                "origin": location or "nowhere",
+                "destination": destination or "nowhere",
+            }
+        )
 
         location.msg_contents(string, exclude=(self,), mapping=mapping)
 
@@ -306,7 +366,10 @@ class Character(DefaultCharacter):
         if not source_location and self.location.has_account:
             # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % self.get_extra_display_name_info(self.location)
+            string = (
+                "You now have %s in your possession."
+                % self.get_extra_display_name_info(self.location)
+            )
             self.location.msg(string)
             return
 
@@ -322,17 +385,23 @@ class Character(DefaultCharacter):
         destination = self.location
         exits = []
         if origin:
-            exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
+            exits = [
+                o
+                for o in destination.contents
+                if o.location is destination and o.destination is origin
+            ]
 
         if not mapping:
             mapping = {}
 
-        mapping.update({
-            "object": self,
-            "exit": exits[0] if exits else "somewhere",
-            "origin": origin or "nowhere",
-            "destination": destination or "nowhere",
-        })
+        mapping.update(
+            {
+                "object": self,
+                "exit": exits[0] if exits else "somewhere",
+                "origin": origin or "nowhere",
+                "destination": destination or "nowhere",
+            }
+        )
 
         destination.msg_contents(string, exclude=(self,), mapping=mapping)
 
@@ -340,7 +409,7 @@ class Character(DefaultCharacter):
 
         super(Character, self).at_object_creation()
 
-        self.db.gender = 'ambiguous'
+        self.db.gender = "ambiguous"
         self.db.title = ""
         self.db.race = "Human"
         self.db.permadeath = False
@@ -361,16 +430,19 @@ class Character(DefaultCharacter):
 
     def at_post_puppet(self):
         # self.location.msg_contents("%s has connected" % self.key)
-        loginmsg = "\n\n[************--Rumour Monger--************]|/" \
-                   "\t %s arrives in Orario.|/" \
-                   "[*****************************************]|/" % self.key
+        loginmsg = (
+            "\n\n[************--Rumour Monger--************]|/"
+            "\t %s arrives in Orario.|/"
+            "[*****************************************]|/" % self.key
+        )
         SESSIONS.announce_all(loginmsg)
         # tickerhandler.add(interval=randint(10, 15), callback=self.at_regen, persistent=True)
         self.execute_cmd("look")
 
     def get_absolute_url(self):
         from django.urls import reverse
-        return reverse('character:sheet', kwargs={'object_id': self.id})
+
+        return reverse("character:sheet", kwargs={"object_id": self.id})
 
     def at_object_receive(self, obj, source, **kwargs):
         if not obj.db.weight:
@@ -441,17 +513,6 @@ class NPC(LivingMixin, Character):
 
     hp_max = AttributeProperty(default=1, autocreate=False)
 
-    # # hit_dice = AttributeProperty(default=1, autocreate=False)
-    # armor = AttributeProperty(default=1, autocreate=False)  # +10 to get armor defense
-    # morale = AttributeProperty(default=9, autocreate=False)
-    # # hp_multiplier = AttributeProperty(default=4, autocreate=False)  # 4 default in Knave
-    # hp = AttributeProperty(default=None, autocreate=False)  # internal tracking, use .hp property
-    # hitD = AttributeProperty(default=None, autocreate=False)
-    # stats_info = {}
-    # hit_dice = 1
-    # hp_multiplier = 1
-    # hp_max = 0
-
     @property
     def hurt_level(self):
         """
@@ -478,8 +539,6 @@ class NPC(LivingMixin, Character):
 
     def basetype_posthook_setup(self):
 
-        print(f"Hitpoints: {self.hp_max}")
-
         self.stats.HP.max = self.hp_max
         self.stats.HP.current = self.stats.HP.max
 
@@ -504,9 +563,9 @@ class Mob(NPC):
         "flee": 0.05,
     }
 
-    # @lazy_property
-    # def ai(self):
-    #     return AIHandler(self)
+    @lazy_property
+    def ai(self):
+        return AIHandler(self)
 
     def ai_idle(self):
         """
@@ -529,7 +588,9 @@ class Mob(NPC):
                 case "hold":
                     combathandler.queue_action({"key": "hold"})
                 case "combat":
-                    combathandler.queue_action({"key": "attack", "target": random.choice(enemies)})
+                    combathandler.queue_action(
+                        {"key": "attack", "target": random.choice(enemies)}
+                    )
                 case "stunt":
                     # choose a random ally to help
                     combathandler.queue_action(
@@ -544,9 +605,15 @@ class Mob(NPC):
                 case "item":
                     # use a random item on a random ally
                     target = random.choice(allies)
-                    valid_items = [item for item in self.contents if item.at_pre_use(self, target)]
+                    valid_items = [
+                        item for item in self.contents if item.at_pre_use(self, target)
+                    ]
                     combathandler.queue_action(
-                        {"key": "item", "item": random.choice(valid_items), "target": target}
+                        {
+                            "key": "item",
+                            "item": random.choice(valid_items),
+                            "target": target,
+                        }
                     )
                 case "flee":
                     self.ai.set_state("flee")
@@ -587,6 +654,13 @@ class Mob(NPC):
         else:
             # if in a dead end, roam will allow for backing out
             self.ai.set_state("roam")
+
+    # def at_death(self):
+    #     """
+    #     Called when this living thing dies.
+
+    #     """
+    #     self.delete()
 
     def at_defeat(self):
         """

@@ -39,10 +39,11 @@ USE_TZ = True
 IN_GAME_ERRORS = True
 BROADCAST_SERVER_RESTART_MESSAGES = True
 NEW_ACCOUNT_REGISTRATION_ENABLED = False
+CLIENT_DEFAULT_WIDTH = 100
 
-WEBSOCKET_CLIENT_URL="wss://evennia.lytle.pw:4002/"
+WEBSOCKET_CLIENT_URL = "wss://evennia.lytle.pw:4002/"
 
-CSRF_TRUSTED_ORIGINS = ['https://evennia.lytle.pw']
+CSRF_TRUSTED_ORIGINS = ["https://evennia.lytle.pw"]
 
 
 # Multiple characters per account, requires manual creation and login
@@ -54,17 +55,19 @@ MAX_NR_CHARACTERS = 5
 DEBUG = False
 # COMMAND_DEFAULT_CLASS = "commands.command.Command"
 
-INSTALLED_APPS += ('web.chargen', 'web.character',
-                   'django.contrib.humanize.apps.HumanizeConfig',
-                   'django_nyt.apps.DjangoNytConfig',
-                   'mptt',
-                   'sorl.thumbnail',
-                   'wiki.apps.WikiConfig',
-                   'wiki.plugins.attachments.apps.AttachmentsConfig',
-                   'wiki.plugins.notifications.apps.NotificationsConfig',
-                   'wiki.plugins.images.apps.ImagesConfig',
-                   'wiki.plugins.macros.apps.MacrosConfig',
-                   )
+INSTALLED_APPS += (
+    "web.chargen",
+    "web.character",
+    "django.contrib.humanize.apps.HumanizeConfig",
+    "django_nyt.apps.DjangoNytConfig",
+    "mptt",
+    "sorl.thumbnail",
+    "wiki.apps.WikiConfig",
+    "wiki.plugins.attachments.apps.AttachmentsConfig",
+    "wiki.plugins.notifications.apps.NotificationsConfig",
+    "wiki.plugins.images.apps.ImagesConfig",
+    "wiki.plugins.macros.apps.MacrosConfig",
+)
 
 # Disable wiki handling of login/signup, so that it uses your Evennia login system instead
 WIKI_ACCOUNT_HANDLING = False
@@ -72,8 +75,8 @@ WIKI_ACCOUNT_SIGNUP_ALLOWED = False
 
 # Enable wikilinks, e.g. [[Getting Started]]
 WIKI_MARKDOWN_KWARGS = {
-    'extensions': [
-        'wikilinks',
+    "extensions": [
+        "wikilinks",
     ]
 }
 
@@ -141,18 +144,27 @@ DATABASES = {
 ######################################################################
 
 # make contrib prototypes available as parents for map nodes
-PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes', 'world.items.prototypes.prototypes_gathering',
-                      'world.items.prototypes.prototypes_crafting', 'world.items.prototypes.prototypes_tools',
-                      'world.items.prototypes.prototypes_containers', 'world.items.prototypes.prototypes_fountains',
-                      'world.items.prototypes.prototypes_gear', 'world.mobs.prototypes_mobs', 'world.items.prototypes.prototypes_melee_weapons']
+PROTOTYPE_MODULES += [
+    "evennia.contrib.grid.xyzgrid.prototypes",
+    "world.items.prototypes.prototypes_gathering",
+    "world.items.prototypes.prototypes_crafting",
+    "world.items.prototypes.prototypes_tools",
+    "world.items.prototypes.prototypes_containers",
+    "world.items.prototypes.prototypes_fountains",
+    "world.items.prototypes.prototypes_gear",
+    "world.mobs.prototypes_mobs",
+    "world.items.prototypes.prototypes_melee_weapons",
+]
 
-CRAFT_RECIPE_MODULES = ['core.crafting.blacksmithing']
+CRAFT_RECIPE_MODULES = ["core.crafting.blacksmithing"]
 
 # add launcher command
-EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand'
+EXTRA_LAUNCHER_COMMANDS["xyzgrid"] = "evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand"
 
 # add game-specific maps
-XYZGRID_MAP_LIST = ['world.maps.orario',]
+XYZGRID_MAP_LIST = [
+    "world.maps.orario",
+]
 
 
 ######################################################################

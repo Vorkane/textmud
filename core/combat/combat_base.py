@@ -122,12 +122,14 @@ class CombatActionAttack(CombatAction):
     def execute(self):
         attacker = self.combatant
         # weapon = attacker.weapon
-        weapon = attacker.equip.get('wield1')
+        weapon = attacker.equip.get("wield1")
         target = self.target
 
         if weapon.at_pre_use(attacker, target):
             weapon.use(
-                attacker, target, advantage=self.combathandler.has_advantage(attacker, target)
+                attacker,
+                target,
+                advantage=self.combathandler.has_advantage(attacker, target),
             )
             weapon.at_post_use(attacker, target)
 
@@ -155,7 +157,9 @@ class CombatActionStunt(CombatAction):
         combathandler = self.combathandler
         attacker = self.combatant
         recipient = self.recipient  # the one to receive the effect of the stunt
-        target = self.target  # the affected by the stunt (can be the same as recipient/combatant)
+        target = (
+            self.target
+        )  # the affected by the stunt (can be the same as recipient/combatant)
         txt = ""
 
         if recipient == target:
@@ -170,8 +174,8 @@ class CombatActionStunt(CombatAction):
         is_success, _, txt = rules.dice.opposed_saving_throw(
             attacker,
             defender,
-            attack_type=self.stunt_type,
-            defense_type=self.defense_type,
+            # attack_type=self.stunt_type,
+            # defense_type=self.defense_type,
             advantage=combathandler.has_advantage(attacker, defender),
             disadvantage=combathandler.has_disadvantage(attacker, defender),
         )
@@ -196,7 +200,9 @@ class CombatActionStunt(CombatAction):
                     f"against $You({target.key})!"
                 )
         else:
-            self.msg(f"$You({defender.key}) $conj(resist)! $You() $conj(fail) the stunt.")
+            self.msg(
+                f"$You({defender.key}) $conj(resist)! $You() $conj(fail) the stunt."
+            )
 
 
 class CombatActionUseItem(CombatAction):
