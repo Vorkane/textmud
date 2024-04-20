@@ -6,6 +6,7 @@ Rooms are simple containers that has no location of their own.
 """
 
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom
+from evennia import AttributeProperty
 
 from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom
 
@@ -21,9 +22,9 @@ class Room(ContribRPRoom):
     properties and methods available on all Objects.
     """
 
-    allow_combat = False
-    allow_pvp = False
-    allow_death = False
+    allow_combat = AttributeProperty(False, autocreate=False)
+    allow_pvp = AttributeProperty(False, autocreate=False)
+    allow_death = AttributeProperty(False, autocreate=False)
 
     appearance_template = """
 |/{header}
@@ -68,10 +69,10 @@ _EXIT_GRID_SHIFT = {
 }
 
 """ class OverworldRoom(wilderness.WildernessRoom, Room):
-    """"""""
+    """ """""
     Special typeclass for the Overworld rooms
     Allows displaying the Overworld map
-    """"""""
+    """ """""
 
     VIEW_WIDTH = 13
     VIEW_HEIGHT = 9
@@ -111,6 +112,7 @@ class TownRoom(Room, XYZRoom):
     """
     Combines the XYZGrid functionality with Ainneve-specific room code.
     """
+
     map_visual_range = 2
 
 
@@ -120,8 +122,8 @@ class PvPRoom(Room):
 
     """
 
-    allow_combat = True
-    allow_pvp = True
+    allow_combat = AttributeProperty(True, autocreate=False)
+    allow_pvp = AttributeProperty(True, autocreate=False)
 
     def get_display_footer(self, looker, **kwargs):
         """

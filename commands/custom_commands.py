@@ -3,8 +3,10 @@ from commands.command import MuxCommand
 from evennia import default_cmds
 from commands.base import DanMachiCommand
 from evennia.utils.evform import EvForm
+
 # from evennia.contrib.game_systems.containers.containers import CmdContainerLook
 from evennia.utils import evtable
+
 # from evennia.contrib.rpg.health_bar import display_meter
 from typeclasses.characters import wield_slots
 from typeclasses.characters import armor_slots
@@ -25,17 +27,17 @@ class CmdSheet(MuxCommand):
         # if len(self.caller.traits.all) == 0:
         #    return
 
-        form = EvForm('commands.templates.charsheet', align='l')
+        form = EvForm("commands.templates.charsheet", align="l")
         fields = {
-            'A': self.caller.name,
-            'B': self.caller.db.title,
-            'C': self.caller.db.race,
-            'L': self.caller.stats.STR.base,
-            'M': self.caller.stats.END.base,
-            'N': self.caller.stats.DEX.base,
-            'O': self.caller.stats.AGI.base,
-            'P': self.caller.stats.MAG.base,
-            'Q': self.caller.stats.LUK.base,
+            "A": self.caller.name,
+            "B": self.caller.db.title,
+            "C": self.caller.db.race,
+            "L": self.caller.stats.STR.base,
+            "M": self.caller.stats.END.base,
+            "N": self.caller.stats.DEX.base,
+            "O": self.caller.stats.AGI.base,
+            "P": self.caller.stats.MAG.base,
+            "Q": self.caller.stats.LUK.base,
         }
         form.map({k: self._format_trait_val(v) for k, v in fields.items()})
 
@@ -46,7 +48,7 @@ class CmdSheet(MuxCommand):
         return "|w{}|n".format(val)
 
 
-class CmdStatus(DanMachiCommand):
+class CmdStatus(MuxCommand):
     key = "status"
     aliases = "score"
 
@@ -66,7 +68,6 @@ class CmdStatus(DanMachiCommand):
             f"{'|RSkill|w':<20}{'|RLevel|w':<14}{'|RXP|w':<14}|n\n"
             f"{'|CBlacksmithing|w':<20}{self.caller.skills.BLACKSMITHING.base:<10}{(self.caller.skills.BLACKSMITHING.xptnl - self.caller.skills.BLACKSMITHING.xp):<10}|n\n\n"
             # f"{''.join([key.name(self.caller) for key in self.caller.skills.items()])}"
-
             f"{'You have earned a total of '}{self.caller.stats.XP.total}{' experience.'}\n"
             f"{'You have '}{self.caller.stats.XP.current}{' unspent experience.'}\n"
             # f"{'You have '}{self.caller.iron}{ ' Iron.'}\n"
@@ -76,7 +77,7 @@ class CmdStatus(DanMachiCommand):
         self.caller.msg(_CHAR_STATUS)
 
 
-class CmdProf(DanMachiCommand):
+class CmdProf(MuxCommand):
     key = "proficiency"
     aliases = "prof"
 
@@ -97,19 +98,21 @@ class CmdProf(DanMachiCommand):
 class CmdLevel(MuxCommand):
 
     key = "level"
-    locks = 'cmd:all()'
+    locks = "cmd:all()"
 
     def func(self):
         tr = self.caller.stats
         lvl = str(tr.LV.actual + 1)
-        xp1 = rulebook.LEVEL[lvl]['xp']
-        xp2 = rulebook.LEVEL[lvl]['xp'] - tr.XP.actual
-        self.caller.msg("|MLEVEL %s ADVANCEMENT\n"
-                        "Advancement will cost %s Experience\n"
-                        "|CYou will need %s more Experiencee" % (lvl, xp1, xp2))
+        xp1 = rulebook.LEVEL[lvl]["xp"]
+        xp2 = rulebook.LEVEL[lvl]["xp"] - tr.XP.actual
+        self.caller.msg(
+            "|MLEVEL %s ADVANCEMENT\n"
+            "Advancement will cost %s Experience\n"
+            "|CYou will need %s more Experiencee" % (lvl, xp1, xp2)
+        )
 
 
-class CmdGain(DanMachiCommand):
+class CmdGain(MuxCommand):
     key = "gain"
 
     def func(self):
@@ -117,17 +120,17 @@ class CmdGain(DanMachiCommand):
 
         caller = self.caller
 
-        if self.caller.stats.XP.current >= rulebook.LEVEL[lvl]['xp']:
+        if self.caller.stats.XP.current >= rulebook.LEVEL[lvl]["xp"]:
             caller.msg("You leveled up")
             self.caller.stats.LV.actual += 1
-            self.caller.stats.XP.current -= rulebook.LEVEL[lvl]['xp']
-        elif self.caller.stats.XP.current < rulebook.LEVEL[lvl]['xp']:
+            self.caller.stats.XP.current -= rulebook.LEVEL[lvl]["xp"]
+        elif self.caller.stats.XP.current < rulebook.LEVEL[lvl]["xp"]:
             caller.msg("You did not level up")
 
 
 class CmdTrain(MuxCommand):
     key = "train"
-    locks = 'cmd:all()'
+    locks = "cmd:all()"
 
     def func(self):
 
@@ -149,7 +152,9 @@ class CmdTrain(MuxCommand):
             caller.skills[req_skill].base += 1
             caller.skills[req_skill].xp = 0
         elif caller.skills[req_skill].xp < caller.skills[req_skill].xptnl:
-            caller.msg(f"You do not have enough experience to level up {req_skill_proper}.")
+            caller.msg(
+                f"You do not have enough experience to level up {req_skill_proper}."
+            )
 
 
 class CmdInventoryExtended(Command):
@@ -185,7 +190,10 @@ class CmdInventoryExtended(Command):
         wear_table = evtable.EvTable(border="header")
 
         carried = [obj for obj in items if not obj.db.worn]
-        names_and_descs = [(obj.get_display_name(self.caller), obj.get_display_desc(self.caller)) for obj in set(carried)]
+        names_and_descs = [
+            (obj.get_display_name(self.caller), obj.get_display_desc(self.caller))
+            for obj in set(carried)
+        ]
         carried_sums = {tup: names_and_descs.count(tup) for tup in set(names_and_descs)}
         worn = [obj for obj in items if obj.db.worn]
 
@@ -194,7 +202,8 @@ class CmdInventoryExtended(Command):
         for (name, desc), count in carried_sums.items():
             carry_table.add_row(
                 # item.get_display_name(self.caller), item.get_display_desc(self.caller)
-                f"{count}x {name}", desc
+                f"{count}x {name}",
+                desc,
             )
         if carry_table.nrows == 0:
             carry_table.add_row("Nothing.", "")
@@ -214,25 +223,50 @@ class CmdInventoryExtended(Command):
 |015=================================|n
             |035Inventory
         Weight {current_weight}/{max_weight}|n
-|015=================================|n""".format(current_weight="".join(str([self.caller.stats.ENC.current])), max_weight="".join(str([self.caller.stats.ENC.max])))
+|015=================================|n""".format(
+            current_weight="".join(str([self.caller.stats.ENC.current])),
+            max_weight="".join(str([self.caller.stats.ENC.max])),
+        )
         inv_equip = """
 Wielding: {wielding}
 Armors: {armor}
 Clothing: {clothing}
-|015=================================|n""".format(wielding="\n\t  ".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in wield_slots if self.caller.equip.get(slot)]),
-                                                  armor="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in armor_slots if self.caller.equip.get(slot)]),
-                                                  clothing="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in clothing_slots if self.caller.equip.get(slot)]))
+|015=================================|n""".format(
+            wielding="\n\t  ".join(
+                [
+                    self.caller.equip.get(slot).get_display_name(self.caller)
+                    for slot in wield_slots
+                    if self.caller.equip.get(slot)
+                ]
+            ),
+            armor="\n\t".join(
+                [
+                    self.caller.equip.get(slot).get_display_name(self.caller)
+                    for slot in armor_slots
+                    if self.caller.equip.get(slot)
+                ]
+            ),
+            clothing="\n\t".join(
+                [
+                    self.caller.equip.get(slot).get_display_name(self.caller)
+                    for slot in clothing_slots
+                    if self.caller.equip.get(slot)
+                ]
+            ),
+        )
         inv_carry = """
 Carrying:
-{carrying}""".format(carrying=str(carry_table))
+{carrying}""".format(
+            carrying=str(carry_table)
+        )
 
-# |015=================================|n""".format(
-#             current_weight="".join(str([self.caller.stats.ENC.current])),
-#             max_weight="".join(str([self.caller.stats.ENC.max])),
-#             wielding="\n\t  ".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in wield_slots if self.caller.equip.get(slot)]),
-#             armor="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in armor_slots if self.caller.equip.get(slot)]),
-#             clothing="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in clothing_slots if self.caller.equip.get(slot)]),
-#             carrying=str(carry_table))
+        # |015=================================|n""".format(
+        #             current_weight="".join(str([self.caller.stats.ENC.current])),
+        #             max_weight="".join(str([self.caller.stats.ENC.max])),
+        #             wielding="\n\t  ".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in wield_slots if self.caller.equip.get(slot)]),
+        #             armor="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in armor_slots if self.caller.equip.get(slot)]),
+        #             clothing="\n\t".join([self.caller.equip.get(slot).get_display_name(self.caller) for slot in clothing_slots if self.caller.equip.get(slot)]),
+        #             carrying=str(carry_table))
 
         message_list.append(inv_header)
         message_list.append(inv_equip)
@@ -341,7 +375,9 @@ class CmdExtendedGet(default_cmds.CmdGet):
             return
 
         # calling possible at_pre_get_from hook on location
-        if hasattr(location, "at_pre_get_from") and not location.at_pre_get_from(caller, obj):
+        if hasattr(location, "at_pre_get_from") and not location.at_pre_get_from(
+            caller, obj
+        ):
             self.msg("You can't get that.")
             return
 
@@ -352,12 +388,15 @@ class CmdExtendedGet(default_cmds.CmdGet):
             singular, _ = obj.get_numbered_name(1, caller)
             if location == caller.location:
                 # we're picking it up from the area
-                caller.location.msg_contents(f"$You() $conj(pick) up {singular}.", from_obj=caller)
+                caller.location.msg_contents(
+                    f"$You() $conj(pick) up {singular}.", from_obj=caller
+                )
             else:
                 # we're getting it from somewhere else
                 container_name, _ = location.get_numbered_name(1, caller)
                 caller.location.msg_contents(
-                    f"$You() $conj(get) {singular} from {container_name}.", from_obj=caller
+                    f"$You() $conj(get) {singular} from {container_name}.",
+                    from_obj=caller,
                 )
             # calling at_get hook method
             obj.at_get(caller)
@@ -415,7 +454,9 @@ class CmdPut(default_cmds.CmdDrop):
             return
 
         # Call the container's possible at_pre_put_in method.
-        if hasattr(container, "at_pre_put_in") and not container.at_pre_put_in(caller, obj):
+        if hasattr(container, "at_pre_put_in") and not container.at_pre_put_in(
+            caller, obj
+        ):
             self.msg("You can't put that there.")
             return
 
@@ -432,7 +473,7 @@ class CmdPut(default_cmds.CmdDrop):
             obj.at_drop(caller)
 
 
-class CmdExtendedDrop(default_cmds.CmdDrop, DanMachiCommand):
+class CmdExtendedDrop(default_cmds.CmdDrop, MuxCommand):
     """
     drop something
 
@@ -453,11 +494,13 @@ class CmdExtendedDrop(default_cmds.CmdDrop, DanMachiCommand):
 
         caller = self.caller
 
-        if 'all' in self.args:
+        if "all" in self.args:
             for obj in caller.contents:
                 obj.move_to(caller.location, quiet=True)
-                caller.msg('you drop %s' % (obj.name,))
-                caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
+                caller.msg("you drop %s" % (obj.name,))
+                caller.location.msg_contents(
+                    "%s drops %s." % (caller.name, obj.name), exclude=caller
+                )
                 obj.at_drop(caller)
 
         if not self.args:
@@ -466,8 +509,12 @@ class CmdExtendedDrop(default_cmds.CmdDrop, DanMachiCommand):
 
         # Because the DROP command by definition looks for items
         # in inventory, call the search function using location = caller
-        result = caller.search(self.args, location=caller, nofound_string="You aren't carrying %s." % self.args,
-                               quiet=True)
+        result = caller.search(
+            self.args,
+            location=caller,
+            nofound_string="You aren't carrying %s." % self.args,
+            quiet=True,
+        )
         if not result:
             return
         else:
@@ -475,8 +522,8 @@ class CmdExtendedDrop(default_cmds.CmdDrop, DanMachiCommand):
 
         obj.move_to(caller.location, quiet=True)
         caller.msg("You drop %s." % (obj.name,))
-        caller.location.msg_contents("%s drops %s." %
-                                     (caller.name, obj.name),
-                                     exclude=caller)
+        caller.location.msg_contents(
+            "%s drops %s." % (caller.name, obj.name), exclude=caller
+        )
         # Call the object script's at_drop() method.
         # obj.at_drop(caller)

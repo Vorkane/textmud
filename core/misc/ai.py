@@ -67,6 +67,7 @@ class AIHandler:
         Get a list of potential targets for the NPC to combat.
 
         """
+
         return [
             obj
             for obj in self.obj.location.contents

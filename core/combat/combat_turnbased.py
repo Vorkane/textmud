@@ -824,12 +824,12 @@ class CmdTurnAttack(Command):
         if not hasattr(target.stats, "HP"):
             self.msg("You can't attack that.")
             return
-        # elif target.hp <= 0:
         elif target.stats.HP.current <= 0:
             self.msg(f"{target.get_display_name(self.caller)} is already down.")
             return
 
         if target.is_pc and not target.location.allow_pvp:
+            self.msg(f"{target.is_pc} and {self.caller.ai.get_targets()}")
             self.msg("PvP combat is not allowed here!")
             return
 
@@ -842,7 +842,7 @@ class CmdTurnAttack(Command):
         combathandler.queue_action(self.caller, {"key": "attack", "target": target})
         combathandler.add_combatant(target)
         target.msg(
-            "|rYou are attacked by {self.caller.get_display_name(self.caller)}!|n"
+            f"|rYou are attacked by {self.caller.get_display_name(self.caller)}!|n"
         )
         combathandler.start_combat()
 

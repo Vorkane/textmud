@@ -1,4 +1,5 @@
 from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
+
 # from evennia.objects.objects import DefaultObject
 from evennia.contrib.game_systems.containers import ContribContainer
 from world.rulebook import item_durability
@@ -16,6 +17,7 @@ class Item(ContribRPObject):
         durability (int): how much damage an item can sustain before being destroyed
         current (int): how much durability an item currently has remaining
     """
+
     quality = "Common"
     value = 0
     weight = 0.0
@@ -51,14 +53,15 @@ class Item(ContribRPObject):
         # either create a string based on self.db.modifiers, or default to an
         # empty string
         modifiers = " ".join(self.db.modifiers or [])
-        return ("{color}{name}|n{modifiers}".format(color=color, name=name, modifiers=modifiers))
+        return "{color}{name}|n{modifiers}".format(
+            color=color, name=name, modifiers=modifiers
+        )
 
     def at_object_creation(self):
         super(Item, self).at_object_creation()
-        self.locks.add(";".join(("puppet:perm(Wizards)",
-                                 "equip:false()",
-                                 "get:true()"
-                                 )))
+        self.locks.add(
+            ";".join(("puppet:perm(Wizards)", "equip:false()", "get:true()"))
+        )
         # self.db.itemid = self.itemid
         self.db.value = self.value
         self.db.weight = float(self.weight)
@@ -70,12 +73,16 @@ class Item(ContribRPObject):
         if not looker:
             return
 
-        form = EvForm('commands.templates.itemsheet', align='l')
-        form.map(cells={'A': self.get_display_name(self),
-                        'B': self.db.curr_dura,
-                        'C': self.db.max_dura,
-                        'D': self.db.desc,
-                        'E': item_durability(self) if (self.max_dura) else "None"})
+        form = EvForm("commands.templates.itemsheet", align="l")
+        form.map(
+            cells={
+                "A": self.get_display_name(self),
+                "B": self.db.curr_dura,
+                "C": self.db.max_dura,
+                "D": self.db.desc,
+                "E": item_durability(self) if (self.db.max_dura) else "None",
+            }
+        )
 
         # fields = {
         #     'A': self.key,
@@ -106,6 +113,7 @@ class Equippable(Item):
         multi_slot (bool): operator for multiple slots. False equips to
             first available slot; True requires all listed slots available.
     """
+
     slots = None
     multi_slot = False
 
